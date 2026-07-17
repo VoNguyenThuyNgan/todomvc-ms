@@ -1,0 +1,90 @@
+﻿@TodoBff_HostAddress = http://localhost:5100
+
+### ========================================
+### Get all todos
+### ========================================
+
+GET {{TodoBff_HostAddress}}/bff/todos
+Accept: application/json
+
+###
+
+### ========================================
+### Get active todos
+### ========================================
+
+GET {{TodoBff_HostAddress}}/bff/todos?filter=Active
+Accept: application/json
+
+###
+
+### ========================================
+### Get completed todos
+### ========================================
+
+GET {{TodoBff_HostAddress}}/bff/todos?filter=Completed
+Accept: application/json
+
+###
+
+### ========================================
+### Create todo
+### ========================================
+
+POST {{TodoBff_HostAddress}}/bff/todos
+Content-Type: application/json
+
+{
+    "title": "Learn Todo BFF"
+}
+
+###
+
+@TodoId = 6a59fda72c16d797505de2f9
+
+### ========================================
+### Get todo by id
+### ========================================
+
+GET {{TodoBff_HostAddress}}/bff/todos/{{TodoId}}
+Accept: application/json
+
+###
+
+### ========================================
+### Update todo
+### ========================================
+
+PUT {{TodoBff_HostAddress}}/bff/todos/{{TodoId}}
+Content-Type: application/json
+
+{
+    "title": "Learn BFF Updated",
+    "isCompleted": false
+}
+
+###
+
+### ========================================
+### Toggle todo
+### ========================================
+
+PATCH {{TodoBff_HostAddress}}/bff/todos/{{TodoId}}/toggle
+
+###
+
+### ========================================
+### Delete todo
+### ========================================
+
+DELETE {{TodoBff_HostAddress}}/bff/todos/{{TodoId}}
+
+###
+
+### ========================================
+### Clear completed todos
+### ========================================
+
+DELETE {{TodoBff_HostAddress}}/bff/todos/completed
+
+###
