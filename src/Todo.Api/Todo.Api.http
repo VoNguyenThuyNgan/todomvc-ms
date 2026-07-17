@@ -1,5 +1,9 @@
 ﻿@host = https://localhost:7064
-@todoId = 6a59df099d47b5d4bf0132f8
+@todoId = REPLACE_WITH_ID
+
+##################################################
+# TODOS API
+##################################################
 
 ##################################################
 # GET
@@ -29,13 +33,13 @@ Accept: application/json
 
 ###
 
-### Todo not found
+### Get todo by id - Not Found
 GET {{host}}/api/todos/aaaaaaaaaaaaaaaaaaaaaaaa
 Accept: application/json
 
 ###
 
-### Invalid filter
+### Get todos - Invalid filter
 GET {{host}}/api/todos?filter=Done
 Accept: application/json
 
@@ -43,7 +47,7 @@ Accept: application/json
 # CREATE
 ##################################################
 
-### Create Todo
+### Create todo
 POST {{host}}/api/todos
 Content-Type: application/json
 
@@ -51,8 +55,32 @@ Content-Type: application/json
     "title": "Learn Carter"
 }
 
-### Update Not Found
+###
 
+### Create todo - Validation failed
+POST {{host}}/api/todos
+Content-Type: application/json
+
+{
+    "title": ""
+}
+
+##################################################
+# UPDATE
+##################################################
+
+### Update todo
+PUT {{host}}/api/todos/{{todoId}}
+Content-Type: application/json
+
+{
+    "title": "Learn Carter - Updated",
+    "isCompleted": false
+}
+
+###
+
+### Update todo - Not Found
 PUT {{host}}/api/todos/6a59d85063199650d685767d
 Content-Type: application/json
 
@@ -61,17 +89,46 @@ Content-Type: application/json
     "isCompleted": false
 }
 
-### Toggle Todo
+###
 
+### Update todo - Validation failed
+PUT {{host}}/api/todos/{{todoId}}
+Content-Type: application/json
+
+{
+    "title": "",
+    "isCompleted": false
+}
+
+##################################################
+# TOGGLE
+##################################################
+
+### Toggle todo
 PATCH {{host}}/api/todos/{{todoId}}/toggle
 Accept: application/json
 
-### Delete Todo
+###
 
+### Toggle todo - Not Found
+PATCH {{host}}/api/todos/6a59d85063199650d685767d/toggle
+Accept: application/json
+
+##################################################
+# DELETE
+##################################################
+
+### Delete todo
 DELETE {{host}}/api/todos/{{todoId}}
-Accept: application/json
 
-### Clear Completed
+###
 
+### Delete todo - Not Found
+DELETE {{host}}/api/todos/6a59d85063199650d685767d
+
+##################################################
+# CLEAR COMPLETED
+##################################################
+
+### Clear completed todos
 DELETE {{host}}/api/todos/completed
-Accept: application/json
