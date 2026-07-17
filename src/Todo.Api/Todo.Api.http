@@ -1,0 +1,77 @@
+﻿@host = https://localhost:7064
+@todoId = 6a59df099d47b5d4bf0132f8
+
+##################################################
+# GET
+##################################################
+
+### Get all todos
+GET {{host}}/api/todos
+Accept: application/json
+
+###
+
+### Get active todos
+GET {{host}}/api/todos?filter=Active
+Accept: application/json
+
+###
+
+### Get completed todos
+GET {{host}}/api/todos?filter=Completed
+Accept: application/json
+
+###
+
+### Get todo by id
+GET {{host}}/api/todos/{{todoId}}
+Accept: application/json
+
+###
+
+### Todo not found
+GET {{host}}/api/todos/aaaaaaaaaaaaaaaaaaaaaaaa
+Accept: application/json
+
+###
+
+### Invalid filter
+GET {{host}}/api/todos?filter=Done
+Accept: application/json
+
+##################################################
+# CREATE
+##################################################
+
+### Create Todo
+POST {{host}}/api/todos
+Content-Type: application/json
+
+{
+    "title": "Learn Carter"
+}
+
+### Update Not Found
+
+PUT {{host}}/api/todos/6a59d85063199650d685767d
+Content-Type: application/json
+
+{
+    "title": "Test",
+    "isCompleted": false
+}
+
+### Toggle Todo
+
+PATCH {{host}}/api/todos/{{todoId}}/toggle
+Accept: application/json
+
+### Delete Todo
+
+DELETE {{host}}/api/todos/{{todoId}}
+Accept: application/json
+
+### Clear Completed
+
+DELETE {{host}}/api/todos/completed
+Accept: application/json

@@ -1,18 +1,48 @@
+using Carter;
+using FluentValidation;
+using Microsoft.Extensions.Options;
 using MongoDB.Driver;
 using MongoDB.Entities;
+using Todo.Api.Configuration;
 using Todo.Api.Entities;
+using Todo.Api.Mapping;
+using Todo.Api.Validators;
 
 var builder = WebApplication.CreateBuilder(args);
 
-await DB.InitAsync("TodoMVCDb", "localhost", 27017);
+// Configuration
+builder.Services.Configure<MongoDbOptions>(
+    builder.Configuration.GetSection(MongoDbOptions.SectionName));
+
+// Services
+builder.Services.AddAutoMapper(typeof(TodoProfile));
+builder.Services.AddValidatorsFromAssemblyContaining<CreateTodoRequestValidator>();
+builder.Services.AddCarter();
+
+// Swagger
+builder.Services.AddEndpointsApiExplorer();
+builder.Services.AddSwaggerGen();
 
 var app = builder.Build();
 
-app.MapGet("/", () => "Hello World!");
-app.MapPost("/todos", async (TodoItem todo) =>
+// Swagger
+if (app.Environment.IsDevelopment())
 {
-    await todo.SaveAsync();
-    return Results.Created($"/todos/{todo.ID}", todo);
-});
+    app.UseSwagger();
+    app.UseSwaggerUI();
+}
+
+// MongoDB
+var mongoOptions = app.Services
+    .GetRequiredService<IOptions<MongoDbOptions>>()
+    .Value;
+var clientSettings = MongoClientSettings.FromConnectionString(mongoOptions.ConnectionString);
+
+await DB.InitAsync(
+    mongoOptions.DatabaseName,
+    clientSettings);
+
+app.UseHttpsRedirection();
+app.MapCarter();
 
 app.Run();
