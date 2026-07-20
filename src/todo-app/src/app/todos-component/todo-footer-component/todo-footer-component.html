@@ -1,0 +1,32 @@
+<footer class="footer" [hidden]="todosCount() === 0">
+  <!-- Active Todo -->
+  <span class="todo-count">
+    <strong>
+      {{ activeCount() }}
+    </strong>
+    {{ activeCount() === 1 ? 'item' : 'items' }} left
+  </span>
+
+  <!-- Filter -->
+  <ul class="filters">
+    <li>
+      <a routerLink="/" [class.selected]="filter() === 'all'">All</a>
+    </li>
+    <li>
+      <a routerLink="/active" [class.selected]="filter() === 'active'">Active</a>
+    </li>
+    <li>
+      <a routerLink="/completed" [class.selected]="filter() === 'completed'">Completed</a>
+    </li>
+  </ul>
+
+  <!-- Clear completed -->
+  <button
+    class="clear-completed"
+    type="button"
+    [hidden]="completedCount() === 0"
+    (click)="clearCompletedTodos()"
+  >
+    Clear completed
+  </button>
+</footer>

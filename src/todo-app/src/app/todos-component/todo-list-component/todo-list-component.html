@@ -1,0 +1,30 @@
+<main 
+    class="main"
+    [hidden]="todos().length === 0">
+
+    <!-- Toggel all -->
+    <div class="toggle-all-container">
+        <input
+            class="toggle-all"
+            type="checkbox"
+            [checked]="allCompleted()"
+            (change)="toggleAllTodos($event)">
+
+        <label
+            class="toggle-all-label">
+            Toggle All
+        </label>
+    </div>
+
+    <!-- Todo List -->
+    <ul class="todo-list">
+        @for (todo of todos(); track todo.id){
+            <app-todo-item-component
+                [todo]="todo"
+                (toggle)="toggle.emit($event)"
+                (remove)="remove.emit($event)"
+                (update)="update.emit($event)">
+            </app-todo-item-component>
+        }
+    </ul>
+</main>
