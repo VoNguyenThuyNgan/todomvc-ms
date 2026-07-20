@@ -1,0 +1,15 @@
+[
+  {
+    "Name": "New Profile",
+    "Projects": [
+      {
+        "Path": "src\\Todo.Api\\Todo.Api.csproj",
+        "Action": "Start"
+      },
+      {
+        "Path": "src\\Todo.Bff\\Todo.Bff.csproj",
+        "Action": "Start"
+      }
+    ]
+  }
+]
