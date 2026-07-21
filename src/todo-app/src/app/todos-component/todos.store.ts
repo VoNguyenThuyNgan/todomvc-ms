@@ -107,6 +107,15 @@ export class TodosStore extends ComponentStore<TodosState> {
     todos: state.todos.filter((todo) => !todo.isCompleted),
   }));
 
+  readonly toggleAllInState = this.updater((state, isCompleted: boolean) => ({
+    ...state,
+
+    todos: state.todos.map((todo) => ({
+      ...todo,
+      isCompleted,
+    })),
+  }));
+
   // Effect
   readonly loadTodos = this.effect<void>((trigger$) =>
     trigger$.pipe(
@@ -243,6 +252,31 @@ export class TodosStore extends ComponentStore<TodosState> {
             this.setLoading(false);
           }),
         ),
+      ),
+    ),
+  );
+
+  readonly toggleAll = this.effect<boolean>((trigger$) =>
+    trigger$.pipe(
+      tap(() => this.setLoading(true)),
+      switchMap((IsCompleted) =>
+        this.todoApi
+          .toggleAll({
+            IsCompleted,
+          })
+          .pipe(
+            tap(() => {
+              this.toggleAllInState(IsCompleted);
+            }),
+
+            catchError((error) => {
+              console.error('Toggle All failed', error);
+              return EMPTY;
+            }),
+            finalize(() => {
+              this.setLoading(false);
+            }),
+          ),
       ),
     ),
   );

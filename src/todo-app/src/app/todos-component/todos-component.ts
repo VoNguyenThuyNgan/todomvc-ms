@@ -61,7 +61,7 @@ export class TodosComponent {
   }
 
   toggleAll(completed: boolean): void {
-    console.log('Toggle all: ', completed);
+    this.store.toggleAll(completed);
   }
 
   clearCompleted(): void {
