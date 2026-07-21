@@ -3,10 +3,8 @@ using FluentValidation;
 using Microsoft.Extensions.Options;
 using MongoDB.Driver;
 using MongoDB.Entities;
-using Todo.Api.Configuration;
-using Todo.Api.Entities;
-using Todo.Api.Mapping;
-using Todo.Api.Validators;
+using Todo.Api.Common.Configuration;
+using Todo.Api.Features.Todos;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -15,7 +13,7 @@ builder.Services.Configure<MongoDbOptions>(
     builder.Configuration.GetSection(MongoDbOptions.SectionName));
 
 // Services
-builder.Services.AddAutoMapper(typeof(TodoProfile));
+builder.Services.AddAutoMapper(typeof(TodoMappings));
 builder.Services.AddValidatorsFromAssemblyContaining<CreateTodoRequestValidator>();
 builder.Services.AddCarter();
 

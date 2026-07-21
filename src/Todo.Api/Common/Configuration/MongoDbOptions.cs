@@ -1,4 +1,4 @@
-﻿namespace Todo.Api.Configuration
+﻿namespace Todo.Api.Common.Configuration
 {
     public class MongoDbOptions
     {

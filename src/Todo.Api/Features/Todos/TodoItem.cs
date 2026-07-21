@@ -1,5 +1,5 @@
 ﻿using MongoDB.Entities;
-namespace Todo.Api.Entities
+namespace Todo.Api.Features.Todos
 {
     public class TodoItem : Entity
     {

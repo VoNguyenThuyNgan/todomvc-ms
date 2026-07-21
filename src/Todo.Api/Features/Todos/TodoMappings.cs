@@ -1,13 +1,11 @@
 ﻿using AutoMapper;
-using Todo.Api.DTOs;
-using Todo.Api.Entities;
 
-namespace Todo.Api.Mapping
+namespace Todo.Api.Features.Todos
 {
-    public class TodoProfile : Profile
+    public class TodoMappings : Profile
     {
-        public TodoProfile() {
-            CreateMap<TodoItem, TodoDto>()
+        public TodoMappings() {
+            CreateMap<TodoItem, TodoDtos>()
                 .ForMember(
                     destination => destination.Id,
                     options => options.MapFrom(source => source.ID));

@@ -1,5 +1,4 @@
-﻿using Todo.Bff.DTOs;
-using Todo.Bff.Enums;
+﻿using Todo.Bff.Features.Todos;
 
 namespace Todo.Bff.Clients
 {
