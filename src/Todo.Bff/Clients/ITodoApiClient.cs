@@ -12,5 +12,6 @@ namespace Todo.Bff.Clients
         Task<HttpResponseMessage> ToggleTodoAsync(string id);
         Task<HttpResponseMessage> DeleteTodoAsync(string id);
         Task<HttpResponseMessage> ClearCompletedAsync();
+        Task<HttpResponseMessage> ToggleAllTodosAsync(ToggleAllTodosRequest request);
     }
 }

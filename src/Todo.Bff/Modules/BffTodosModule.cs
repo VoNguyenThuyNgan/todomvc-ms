@@ -60,6 +60,12 @@ namespace Todo.Bff.Modules
                 .WithSummary("Clear completed todos")
                 .WithDescription("Proxy request to Todo.Api to delete all completed todos.")
                 .Produces(StatusCodes.Status204NoContent);
+
+            group.MapPatch("/toggle-all", ToggleAllTodos)
+                .WithName("BffToggleAllTodos")
+                .WithSummary("Toggle all todos")
+                .WithDescription("Proxy request to Todo.Api.")
+                .Produces(StatusCodes.Status204NoContent);
         }
 
         private static async Task<IResult> GetTodos(TodoFilter? filter, ITodoApiClient client)
@@ -110,5 +116,12 @@ namespace Todo.Bff.Modules
 
             return await response.ToResultAsync();
         }
+        private static async Task<IResult> ToggleAllTodos(ToggleAllTodosRequest request, ITodoApiClient client)
+        {
+            var response = await client.ToggleAllTodosAsync(request);
+
+            return await response.ToResultAsync();
+        }
+
     }
 }

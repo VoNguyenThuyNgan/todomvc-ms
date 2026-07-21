@@ -87,4 +87,20 @@ DELETE {{TodoBff_HostAddress}}/bff/todos/{{TodoId}}
 
 DELETE {{TodoBff_HostAddress}}/bff/todos/completed
 
+### Toggle all -> completed
+PATCH {{TodoBff_HostAddress}}/bff/todos/toggle-all
+Content-Type: application/json
+
+{
+    "IsCompleted": true
+}
+
 ###
+
+### Toggle all -> active
+PATCH {{TodoBff_HostAddress}}/bff/todos/toggle-all
+Content-Type: application/json
+
+{
+    "IsCompleted": false
+}

@@ -63,5 +63,11 @@ namespace Todo.Bff.Clients
             return await _httpClient.DeleteAsync(
                 "/api/todos/completed");
         }
+        public async Task<HttpResponseMessage> ToggleAllTodosAsync(ToggleAllTodosRequest request)
+        {
+            return await _httpClient.PatchAsJsonAsync(
+                "/api/todos/toggle-all",
+                request);
+        }
     }
 }
