@@ -63,6 +63,12 @@ namespace Todo.Api.Modules
                 .WithSummary("Clear completed todos")
                 .WithDescription("Deletes all completed todos.")
                 .Produces(StatusCodes.Status204NoContent);
+
+            group.MapPatch("/toggle-all", ToggleAllTodos)
+                .WithName("ToggleAllTodos")
+                .WithSummary("Toggle all todos")
+                .WithDescription("Mark all todos as completed or active.")
+                .Produces(StatusCodes.Status204NoContent);
         }
 
         private static async Task<IResult> GetTodos(TodoFilter? filter, IMapper mapper)
@@ -214,6 +220,20 @@ namespace Todo.Api.Modules
             foreach (var todo in completedTodo)
             {
                 await todo.DeleteAsync();
+            }
+
+            return Results.NoContent();
+        }
+
+        private static async Task<IResult> ToggleAllTodos(ToggleAllTodosRequest request)
+        {
+            var todos = await DB.Find<TodoItem>()
+                .ExecuteAsync();
+
+            foreach (var todo in todos)
+            {
+                todo.IsCompleted = request.IsCompleted;
+                await todo.SaveAsync();
             }
 
             return Results.NoContent();

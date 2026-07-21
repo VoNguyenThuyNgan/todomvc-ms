@@ -1,4 +1,4 @@
-﻿@host = https://localhost:7064
+﻿@host = https://localhost:5200
 @todoId = REPLACE_WITH_ID
 
 ##################################################
@@ -132,3 +132,21 @@ DELETE {{host}}/api/todos/6a59d85063199650d685767d
 
 ### Clear completed todos
 DELETE {{host}}/api/todos/completed
+
+##################################################
+# TOGGLE ALL
+##################################################
+PATCH {{host}}/api/todos/toggle-all
+Content-Type: application/json
+
+{
+    "IsCompleted": true
+}
+
+### 
+PATCH {{host}}/api/todos/toggle-all
+Content-Type: application/json
+
+{
+    "IsCompleted": false
+}
