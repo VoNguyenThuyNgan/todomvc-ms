@@ -1,22 +1,22 @@
 <li [class.completed]="todo().isCompleted" [class.editing]="editing">
   <div class="view">
-    <input class="toggle" type="checkbox" [checked]="todo().isCompleted" (change)="toggleTodo()" />
+    <input class="toggle" type="checkbox" [checked]="todo().isCompleted" (change)="onToggle()" />
 
-    <label (dblclick)="startEdit()">
+    <label (dblclick)="onStartEdit()">
       {{ todo().title }}
     </label>
 
-    <button class="destroy" aria-label="Delete-todo" (click)="removeTodo()"></button>
+    <button class="destroy" aria-label="Delete-todo" (click)="onRemove()"></button>
   </div>
 
   @if (editing){
     <input
         #todoInputRef
         class="edit"
-        [(ngModel)]="title"
+        [(ngModel)]="draftTitle"
         aria-label="Edit-todo"
-        (blur)="commitEdit()"
-        (keyup.enter)="commitEdit()"
-        (keyup.escape)="cancelEdit()">
+        (blur)="onCommitEdit()"
+        (keyup.enter)="onCommitEdit()"
+        (keyup.escape)="onCancelEdit()">
   }
 </li>

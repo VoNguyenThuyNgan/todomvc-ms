@@ -1,12 +1,10 @@
 import { inject, Injectable } from '@angular/core';
 import { TodosState } from './todos.state';
 import { ComponentStore } from '@ngrx/component-store';
-import { todo } from 'node:test';
-import { catchError, EMPTY, filter, finalize, switchMap, tap } from 'rxjs';
-import { Todo, TodoFilter } from '../core/models/todo.model';
-import { TodoApiService } from '../core/services/todo-api.service';
-import { title } from 'process';
-import { error } from 'console';
+import { EMPTY, switchMap, tap } from 'rxjs';
+import { TodoApiService } from '../../services/todo-api.service';
+import { Todo, TodoFilter } from '../../models/todo.model';
+import { handleEffect } from '../../../../core/utils/effect.helper';
 
 const initialState: TodosState = {
   todos: [],
@@ -52,11 +50,9 @@ export class TodosStore extends ComponentStore<TodosState> {
 
   // Updater
   readonly setTodos = this.updater((state, todos: Todo[]) => ({ ...state, todos }));
-
   readonly setFilter = this.updater((state, filter: TodoFilter) => ({ ...state, filter }));
-
   readonly setLoading = this.updater((state, loading: boolean) => ({ ...state, loading }));
-
+  readonly setError = this.updater((state, error: string | undefined) => ({ ...state, error }));
   readonly toggleTodoInState = this.updater((state, id: string) => ({
     ...state,
     todos: state.todos.map((todo) =>
@@ -83,7 +79,6 @@ export class TodosStore extends ComponentStore<TodosState> {
       },
     ) => ({
       ...state,
-
       todos: state.todos.map((todo) =>
         todo.id === data.id
           ? {
@@ -97,19 +92,16 @@ export class TodosStore extends ComponentStore<TodosState> {
 
   readonly removeTodoFromState = this.updater((state, id: string) => ({
     ...state,
-
     todos: state.todos.filter((todo) => todo.id !== id),
   }));
 
   readonly clearCompletedFromState = this.updater((state) => ({
     ...state,
-
     todos: state.todos.filter((todo) => !todo.isCompleted),
   }));
 
   readonly toggleAllInState = this.updater((state, isCompleted: boolean) => ({
     ...state,
-
     todos: state.todos.map((todo) => ({
       ...todo,
       isCompleted,
@@ -119,18 +111,17 @@ export class TodosStore extends ComponentStore<TodosState> {
   // Effect
   readonly loadTodos = this.effect<void>((trigger$) =>
     trigger$.pipe(
-      tap(() => this.setLoading(true)),
+      tap(() => {
+        this.setLoading(true);
+        this.setError(undefined);
+      }),
+
       switchMap(() =>
-        this.todoApi.getTodos().pipe(
-          tap((todos) => {
-            console.log('Todos on loadtodos: ', todos);
-            this.setTodos(todos);
-          }),
-          catchError((error) => {
-            console.error(error);
-            return EMPTY;
-          }),
-          finalize(() => this.setLoading(false)),
+        handleEffect(
+          this.todoApi.getTodos(),
+          (todos) => this.setTodos(todos),
+          (err) => this.setError(err.message ?? 'Load Todos failed'),
+          () => this.setLoading(false),
         ),
       ),
     ),
@@ -138,15 +129,16 @@ export class TodosStore extends ComponentStore<TodosState> {
 
   readonly addTodo = this.effect<string>((trigger$) =>
     trigger$.pipe(
-      tap(() => this.setLoading(true)),
+      tap(() => {
+        this.setLoading(true);
+        this.setError(undefined);
+      }),
       switchMap((title) =>
-        this.todoApi.createTodo(title).pipe(
-          tap((todo) => this.addTodoToState(todo)),
-          catchError((error) => {
-            console.error(error);
-            return EMPTY;
-          }),
-          finalize(() => this.setLoading(false)),
+        handleEffect(
+          this.todoApi.createTodo(title),
+          (todo) => this.addTodoToState(todo),
+          (err) => this.setError(err.message ?? 'Add Todo failed'),
+          () => this.setLoading(false),
         ),
       ),
     ),
@@ -159,35 +151,26 @@ export class TodosStore extends ComponentStore<TodosState> {
     trigger$.pipe(
       tap(() => {
         this.setLoading(true);
+        this.setError(undefined);
       }),
 
       switchMap((data) => {
-        const todo = this.get().todos.find((t) => t.id === data.id);
-
+        const todo = this.get().todos.find((todo) => todo.id === data.id);
         if (!todo) {
+          this.setLoading(false);
+          this.setError('Todo not found');
           return EMPTY;
         }
 
-        return this.todoApi
-          .updateTodo(todo.id, {
+        return handleEffect(
+          this.todoApi.updateTodo(todo.id, {
             title: data.title,
             isCompleted: todo.isCompleted,
-          })
-          .pipe(
-            tap(() => {
-              this.updateTodoInState(data);
-            }),
-
-            catchError((error) => {
-              console.error('Update Todo failed', error);
-
-              return EMPTY;
-            }),
-
-            finalize(() => {
-              this.setLoading(false);
-            }),
-          );
+          }),
+          () => this.updateTodoInState(data),
+          (err) => this.setError(err.message ?? 'Update Todo failed'),
+          () => this.setLoading(false),
+        );
       }),
     ),
   );
@@ -195,22 +178,12 @@ export class TodosStore extends ComponentStore<TodosState> {
   readonly deleteTodo = this.effect<string>((trigger$) =>
     trigger$.pipe(
       tap(() => this.setLoading(true)),
-
       switchMap((id) =>
-        this.todoApi.deleteTodo(id).pipe(
-          tap(() => {
-            this.removeTodoFromState(id);
-          }),
-
-          catchError((error) => {
-            console.error('Delete Todo failed', error);
-
-            return EMPTY;
-          }),
-
-          finalize(() => {
-            this.setLoading(false);
-          }),
+        handleEffect(
+          this.todoApi.deleteTodo(id),
+          () => this.removeTodoFromState(id),
+          (err) => this.setError(err.message ?? 'Delete Todo failed'),
+          () => this.setLoading(false),
         ),
       ),
     ),
@@ -220,13 +193,11 @@ export class TodosStore extends ComponentStore<TodosState> {
     trigger$.pipe(
       tap(() => this.setLoading(true)),
       switchMap((id) =>
-        this.todoApi.toggleTodo(id).pipe(
-          tap(() => this.toggleTodoInState(id)),
-          catchError((error) => {
-            console.error(error);
-            return EMPTY;
-          }),
-          finalize(() => this.setLoading(false)),
+        handleEffect(
+          this.todoApi.toggleTodo(id),
+          () => this.toggleTodoInState(id),
+          (err) => this.setError(err.message ?? 'Toggle Todo failed'),
+          () => this.setLoading(false),
         ),
       ),
     ),
@@ -237,20 +208,11 @@ export class TodosStore extends ComponentStore<TodosState> {
       tap(() => this.setLoading(true)),
 
       switchMap(() =>
-        this.todoApi.clearCompleted().pipe(
-          tap(() => {
-            this.clearCompletedFromState();
-          }),
-
-          catchError((error) => {
-            console.error('Clear completed failed', error);
-
-            return EMPTY;
-          }),
-
-          finalize(() => {
-            this.setLoading(false);
-          }),
+        handleEffect(
+          this.todoApi.clearCompleted(),
+          () => this.clearCompletedFromState(),
+          (err) => this.setError(err.message ?? 'Clear completed failed'),
+          () => this.setLoading(false),
         ),
       ),
     ),
@@ -259,24 +221,15 @@ export class TodosStore extends ComponentStore<TodosState> {
   readonly toggleAll = this.effect<boolean>((trigger$) =>
     trigger$.pipe(
       tap(() => this.setLoading(true)),
-      switchMap((IsCompleted) =>
-        this.todoApi
-          .toggleAll({
-            IsCompleted,
-          })
-          .pipe(
-            tap(() => {
-              this.toggleAllInState(IsCompleted);
-            }),
-
-            catchError((error) => {
-              console.error('Toggle All failed', error);
-              return EMPTY;
-            }),
-            finalize(() => {
-              this.setLoading(false);
-            }),
-          ),
+      switchMap((isCompleted) =>
+        handleEffect(
+          this.todoApi.toggleAll({
+            isCompleted,
+          }),
+          () => this.toggleAllInState(isCompleted),
+          (err) => this.setError(err.message ?? 'Toggle All failed'),
+          () => this.setLoading(false),
+        ),
       ),
     ),
   );

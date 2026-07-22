@@ -1,3 +1,3 @@
 export interface ToggleAllTodosRequest {
-  IsCompleted: boolean;
+  isCompleted: boolean;
 }

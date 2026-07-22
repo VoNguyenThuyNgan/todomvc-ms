@@ -1,6 +1,6 @@
 <main 
     class="main"
-    [hidden]="todos().length === 0">
+    [hidden]="(todos() ?? []).length === 0">
 
     <!-- Toggel all -->
     <div class="toggle-all-container">
@@ -8,7 +8,7 @@
             class="toggle-all"
             type="checkbox"
             [checked]="allCompleted()"
-            (change)="toggleAllTodos($event)">
+            (change)="onToggleAll($event)">
 
         <label
             class="toggle-all-label">
@@ -21,9 +21,9 @@
         @for (todo of todos(); track todo.id){
             <app-todo-item-component
                 [todo]="todo"
-                (toggle)="toggle.emit($event)"
-                (remove)="remove.emit($event)"
-                (update)="update.emit($event)">
+                (toggleTodoChange)="toggleTodoChange.emit($event)"
+                (removeTodoChange)="removeTodoChange.emit($event)"
+                (updateTodoChange)="updateTodoChange.emit($event)">
             </app-todo-item-component>
         }
     </ul>

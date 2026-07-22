@@ -1,7 +1,7 @@
 import { Component, input, output } from '@angular/core';
 import { RouterLink } from '@angular/router';
-import { TodoFilter } from '../../core/models/todo.model';
 import { effect } from '@angular/core';
+import { TodoFilter } from '../../models/todo.model';
 
 @Component({
   selector: 'app-todo-footer-component',
@@ -11,24 +11,14 @@ import { effect } from '@angular/core';
   styleUrl: './todo-footer-component.scss',
 })
 export class TodoFooterComponent {
-  constructor() {
-  effect(() => {
-    console.log({
-      todos: this.todosCount(),
-      active: this.activeCount(),
-      completed: this.completedCount(),
-      filter: this.filter()
-    });
-  });
-}
-  todosCount = input.required<number>();
-  activeCount = input.required<number>();
-  completedCount = input.required<number>();
-  filter = input.required<TodoFilter>();
+  todosCount = input.required<number | null>();
+  activeCount = input.required<number | null>();
+  completedCount = input.required<number | null>();
+  filter = input.required<TodoFilter | null>();
 
-  clearCompleted = output<void>();
+  clearCompletedChange = output<void>();
 
-  clearCompletedTodos(): void {
-    this.clearCompleted.emit();
+  onClearCompleted(): void {
+    this.clearCompletedChange.emit();
   }
 }

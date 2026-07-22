@@ -2,20 +2,20 @@
   <app-todo-header-component (add)="addTodo($event)"> </app-todo-header-component>
 
   <app-todo-list-component
-    [todos]="(filteredTodos$ | async) ?? []"
-    (toggle)="toggleTodo($event)"
-    (remove)="removeTodo($event)"
-    (update)="updateTodo($event)"
-    (toggleAll)="toggleAll($event)"
+    [todos]="filteredTodos$ | async"
+    (toggleTodoChange)="toggleTodo($event)"
+    (removeTodoChange)="removeTodo($event)"
+    (updateTodoChange)="updateTodo($event)"
+    (toggleAllTodosChange)="toggleAll($event)"
   >
   </app-todo-list-component>
 
   <app-todo-footer-component
-    [todosCount]="(todosCount$ | async) ?? 0"
-    [activeCount]="(activeCount$ | async) ?? 0"
-    [completedCount]="(completedCount$ | async) ?? 0"
-    [filter]="(filter$ | async) ?? 'all'"
-    (clearCompleted)="clearCompleted()"
+    [todosCount]="todosCount$ | async"
+    [activeCount]="activeCount$ | async"
+    [completedCount]="completedCount$ | async"
+    [filter]="filter$ | async"
+    (clearCompletedChange)="clearCompleted()"
   >
   </app-todo-footer-component>
 </section>
