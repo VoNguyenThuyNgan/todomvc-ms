@@ -1,0 +1,234 @@
+@host = https://localhost:5100
+@todoId = 6a618049c643fa885ce0f275
+@reminderId = 6a618363c643fa885ce0f277
+
+
+##################################################
+# TODOS BFF
+##################################################
+
+##################################################
+# GET
+##################################################
+
+### Get all todos
+GET {{host}}/bff/todos
+Accept: application/json
+
+###
+
+### Get active todos
+GET {{host}}/bff/todos?filter=Active
+Accept: application/json
+
+###
+
+### Get completed todos
+GET {{host}}/bff/todos?filter=Completed
+Accept: application/json
+
+###
+
+### Get todo by id
+GET {{host}}/bff/todos/{{todoId}}
+Accept: application/json
+
+###
+
+### Get todo by id - Not Found
+GET {{host}}/bff/todos/aaaaaaaaaaaaaaaaaaaaaaaa
+Accept: application/json
+
+
+##################################################
+# CREATE
+##################################################
+
+### Create todo
+POST {{host}}/bff/todos
+Content-Type: application/json
+
+{
+    "title": "Test Reminder via BFF"
+    "dueAt": "2026-07-23T13:00:00Z"
+}
+
+
+##################################################
+# UPDATE
+##################################################
+
+### Update todo
+PUT {{host}}/bff/todos/{{todoId}}
+Content-Type: application/json
+
+{
+    "title": "Test Reminder via BFF - Updated",
+    "isCompleted": false,
+    "dueAt": "2026-07-23T09:00:00Z"
+}
+
+
+##################################################
+# TOGGLE
+##################################################
+
+### Toggle todo
+PATCH {{host}}/bff/todos/{{todoId}}/toggle
+Accept: application/json
+
+
+##################################################
+# TOGGLE ALL
+##################################################
+
+### Mark all todos as completed
+PATCH {{host}}/bff/todos/toggle-all
+Content-Type: application/json
+
+{
+    "isCompleted": true
+}
+
+###
+
+### Mark all todos as active
+PATCH {{host}}/bff/todos/toggle-all
+Content-Type: application/json
+
+{
+    "isCompleted": false
+}
+
+
+##################################################
+# DELETE
+##################################################
+
+### Delete todo
+DELETE {{host}}/bff/todos/{{todoId}}
+
+
+##################################################
+# CLEAR COMPLETED
+##################################################
+
+### Clear completed todos
+DELETE {{host}}/bff/todos/completed
+
+
+##################################################
+# REMINDERS BFF
+##################################################
+
+
+##################################################
+# 1. GET REMINDERS
+##################################################
+
+### Get pending reminders
+GET {{host}}/bff/reminders?state=Pending
+Accept: application/json
+
+###
+
+### Get snoozed reminders
+GET {{host}}/bff/reminders?state=Snoozed
+Accept: application/json
+
+###
+
+### Get dismissed reminders
+GET {{host}}/bff/reminders?state=Dismissed
+Accept: application/json
+
+###
+
+### Get all reminders
+GET {{host}}/bff/reminders
+Accept: application/json
+
+
+##################################################
+# 2. UPCOMING REMINDERS
+##################################################
+
+### Get upcoming todos - default 24 hours
+GET {{host}}/bff/reminders/upcoming
+Accept: application/json
+
+###
+
+### Get upcoming todos - within 24 hours
+GET {{host}}/bff/reminders/upcoming?within=24h
+Accept: application/json
+
+###
+
+### Get upcoming todos - within 1 hour
+GET {{host}}/bff/reminders/upcoming?within=1h
+Accept: application/json
+
+###
+
+### Get upcoming todos - invalid format
+GET {{host}}/bff/reminders/upcoming?within=abc
+Accept: application/json
+
+
+##################################################
+# 3. SNOOZE REMINDER
+##################################################
+
+### Snooze reminder for 10 minutes
+PATCH {{host}}/bff/reminders/{{reminderId}}/snooze
+Content-Type: application/json
+
+{
+    "minutes": 1
+}
+
+###
+
+### Snooze reminder for 1 hour
+PATCH {{host}}/bff/reminders/{{reminderId}}/snooze
+Content-Type: application/json
+
+{
+    "minutes": 60
+}
+
+###
+
+### Snooze reminder - invalid minutes
+PATCH {{host}}/bff/reminders/{{reminderId}}/snooze
+Content-Type: application/json
+
+{
+    "minutes": 0
+}
+
+###
+
+### Snooze reminder - not found
+PATCH {{host}}/bff/reminders/aaaaaaaaaaaaaaaaaaaaaaaa/snooze
+Content-Type: application/json
+
+{
+    "minutes": 10
+}
+
+
+##################################################
+# 4. DISMISS REMINDER
+##################################################
+
+### Dismiss reminder
+PATCH {{host}}/bff/reminders/{{reminderId}}/dismiss
+Accept: application/json
+
+###
+
+### Dismiss reminder - not found
+PATCH {{host}}/bff/reminders/aaaaaaaaaaaaaaaaaaaaaaaa/dismiss
+Accept: application/json

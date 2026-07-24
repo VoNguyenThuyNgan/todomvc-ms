@@ -1,4 +1,5 @@
-﻿using Todo.Bff.Features.Todos;
+﻿using Todo.Bff.Features.Reminders;
+using Todo.Bff.Features.Todos;
 
 namespace Todo.Bff.Clients
 {
@@ -11,6 +12,7 @@ namespace Todo.Bff.Clients
             _httpClient = httpClient;
         }
 
+        // Todos
         public async Task<HttpResponseMessage> GetTodosAsync(TodoFilter? filter)
         {
             var url = "/api/todos";
@@ -68,5 +70,44 @@ namespace Todo.Bff.Clients
                 "/api/todos/toggle-all",
                 request);
         }
+
+        // Reminders
+        public async Task<HttpResponseMessage> GetRemindersAsync(ReminderState? state)
+        {
+            var url = "/api/reminders";
+
+            if (state.HasValue)
+            {
+                url += $"?state={state.Value}";
+            }
+
+            return await _httpClient.GetAsync(url);
+        }
+        public async Task<HttpResponseMessage> GetUpcomingRemindersAsync(string? within)
+        {
+            var url = "/api/reminders/upcoming";
+
+            if (!string.IsNullOrWhiteSpace(within))
+            {
+                url += $"?within={within}";
+            }
+
+            return await _httpClient.GetAsync(url);
+        }
+
+        public async Task<HttpResponseMessage> SnoozeReminderAsync(string id, SnoozeReminderRequest request)
+        {
+            return await _httpClient.PatchAsJsonAsync(
+                $"/api/reminders/{id}/snooze",
+                request);
+        }
+
+        public async Task<HttpResponseMessage> DismissReminderAsync(string id)
+        {
+            return await _httpClient.PatchAsync(
+                $"/api/reminders/{id}/dismiss",
+                null);
+        }
+
     }
 }

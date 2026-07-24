@@ -4,6 +4,7 @@ using Microsoft.Extensions.Options;
 using MongoDB.Driver;
 using MongoDB.Entities;
 using Todo.Api.Common.Configuration;
+using Todo.Api.Features.Reminders;
 using Todo.Api.Features.Todos;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -13,9 +14,10 @@ builder.Services.Configure<MongoDbOptions>(
     builder.Configuration.GetSection(MongoDbOptions.SectionName));
 
 // Services
-builder.Services.AddAutoMapper(typeof(TodoMappings));
+builder.Services.AddAutoMapper(typeof(Program).Assembly);
 builder.Services.AddValidatorsFromAssemblyContaining<CreateTodoRequestValidator>();
 builder.Services.AddCarter();
+builder.Services.AddHostedService<ReminderScanner>();
 
 // Swagger
 builder.Services.AddEndpointsApiExplorer();

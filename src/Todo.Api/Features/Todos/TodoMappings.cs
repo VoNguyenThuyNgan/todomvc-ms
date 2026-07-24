@@ -5,7 +5,7 @@ namespace Todo.Api.Features.Todos
     public class TodoMappings : Profile
     {
         public TodoMappings() {
-            CreateMap<TodoItem, TodoDtos>()
+            CreateMap<TodoItem, TodoDto>()
                 .ForMember(
                     destination => destination.Id,
                     options => options.MapFrom(source => source.ID));

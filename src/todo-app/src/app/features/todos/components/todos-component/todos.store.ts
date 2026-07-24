@@ -5,6 +5,8 @@ import { EMPTY, switchMap, tap } from 'rxjs';
 import { TodoApiService } from '../../services/todo-api.service';
 import { Todo, TodoFilter } from '../../models/todo.model';
 import { handleEffect } from '../../../../core/utils/effect.helper';
+import { CreateTodoRequest } from '../../dtos/create-todo-request';
+import { request } from 'http';
 
 const initialState: TodosState = {
   todos: [],
@@ -127,15 +129,15 @@ export class TodosStore extends ComponentStore<TodosState> {
     ),
   );
 
-  readonly addTodo = this.effect<string>((trigger$) =>
+  readonly addTodo = this.effect<CreateTodoRequest>((trigger$) =>
     trigger$.pipe(
       tap(() => {
         this.setLoading(true);
         this.setError(undefined);
       }),
-      switchMap((title) =>
+      switchMap((request) =>
         handleEffect(
-          this.todoApi.createTodo(title),
+          this.todoApi.createTodo(request),
           (todo) => this.addTodoToState(todo),
           (err) => this.setError(err.message ?? 'Add Todo failed'),
           () => this.setLoading(false),
@@ -166,6 +168,7 @@ export class TodosStore extends ComponentStore<TodosState> {
           this.todoApi.updateTodo(todo.id, {
             title: data.title,
             isCompleted: todo.isCompleted,
+            dueAt: todo.dueAt
           }),
           () => this.updateTodoInState(data),
           (err) => this.setError(err.message ?? 'Update Todo failed'),

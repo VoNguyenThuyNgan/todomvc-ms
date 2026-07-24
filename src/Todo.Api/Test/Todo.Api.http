@@ -1,5 +1,7 @@
 ﻿@host = https://localhost:5200
-@todoId = REPLACE_WITH_ID
+@todoId = 6a618049c643fa885ce0f275
+@reminderId = 6a618057c643fa885ce0f276
+
 
 ##################################################
 # TODOS API
@@ -52,7 +54,8 @@ POST {{host}}/api/todos
 Content-Type: application/json
 
 {
-    "title": "Learn Carter"
+    "title": "Test Reminder Flow",
+    "dueAt": "2026-07-22T10:00:00Z"
 }
 
 ###
@@ -150,3 +153,64 @@ Content-Type: application/json
 {
     "IsCompleted": false
 }
+
+##################################################
+# REMINDER FLOW
+##################################################
+
+### 1. Create todo for reminder flow
+POST {{host}}/api/todos
+Content-Type: application/json
+
+{
+    "title": "Test Reminder Flow",
+    "dueAt": "2026-07-22T10:00:00Z"
+}
+
+###
+
+### 2. Get created todo
+GET {{host}}/api/todos/{{todoId}}
+Accept: application/json
+
+###
+
+### 3. Wait 30 seconds for ReminderScanner
+### Then get pending reminders
+GET {{host}}/api/reminders?state=Pending
+Accept: application/json
+
+###
+
+### 4. Snooze reminder for 1 minute
+PATCH {{host}}/api/reminders/{{reminderId}}/snooze
+Content-Type: application/json
+
+{
+    "minutes": 1
+}
+
+###
+
+### 5. Verify snoozed reminder
+GET {{host}}/api/reminders?state=Snoozed
+Accept: application/json
+
+###
+
+### 6. Wait 1 minute + 30 seconds
+### Then verify reactivated reminder
+GET {{host}}/api/reminders?state=Pending
+Accept: application/json
+
+###
+
+### 7. Dismiss reminder
+PATCH {{host}}/api/reminders/{{reminderId}}/dismiss
+Accept: application/json
+
+###
+
+### 8. Verify dismissed reminder
+GET {{host}}/api/reminders?state=Dismissed
+Accept: application/json

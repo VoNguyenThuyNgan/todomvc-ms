@@ -17,27 +17,27 @@ namespace Todo.Api.Features.Todos
                 .WithName("GetTodos")
                 .WithSummary("Get todos")
                 .WithDescription("Get all todos or filter by status")
-                .Produces<List<TodoDtos>>(StatusCodes.Status200OK);
+                .Produces<List<TodoDto>>(StatusCodes.Status200OK);
 
             group.MapGet("/{id}", GetTodoById)
                 .WithName("GetTodoById")
                 .WithSummary("Get todo by id")
                 .WithDescription("Returns a todo by its id.")
-                .Produces<TodoDtos>(StatusCodes.Status200OK)
+                .Produces<TodoDto>(StatusCodes.Status200OK)
                 .ProducesProblem(StatusCodes.Status404NotFound);
 
             group.MapPost("/", CreateTodo)
                 .WithName("CreateTodo")
                 .WithSummary("Create todo")
                 .WithDescription("Creates a new todo.")
-                .Produces<TodoDtos>(StatusCodes.Status201Created)
+                .Produces<TodoDto>(StatusCodes.Status201Created)
                 .ProducesValidationProblem();
 
             group.MapPut("/{id}", UpdateTodo)
                 .WithName("UpdateTodo")
                 .WithSummary("Update todo")
                 .WithDescription("Updates an existing todo.")
-                .Produces<TodoDtos>(StatusCodes.Status200OK)
+                .Produces<TodoDto>(StatusCodes.Status200OK)
                 .ProducesValidationProblem()
                 .ProducesProblem(StatusCodes.Status404NotFound);
 
@@ -45,7 +45,7 @@ namespace Todo.Api.Features.Todos
                 .WithName("ToggleTodo")
                 .WithSummary("Toggle todo completion")
                 .WithDescription("Toggle the completion status of a todo.")
-                .Produces<TodoDtos>(StatusCodes.Status200OK)
+                .Produces<TodoDto>(StatusCodes.Status200OK)
                 .ProducesProblem(StatusCodes.Status404NotFound);
 
             group.MapDelete("/{id}", DeleteTodo)
@@ -93,7 +93,7 @@ namespace Todo.Api.Features.Todos
                     break;
             }
 
-            var response = mapper.Map<List<TodoDtos>>(todos);
+            var response = mapper.Map<List<TodoDto>>(todos);
 
             return Results.Ok(response);
         }
@@ -111,7 +111,7 @@ namespace Todo.Api.Features.Todos
                     statusCode: StatusCodes.Status404NotFound);
             }
 
-            var response = mapper.Map<TodoDtos>(todo);
+            var response = mapper.Map<TodoDto>(todo);
 
             return Results.Ok(response);
         }
@@ -131,7 +131,7 @@ namespace Todo.Api.Features.Todos
 
             await todo.SaveAsync();
 
-            var response = mapper.Map<TodoDtos>(todo);
+            var response = mapper.Map<TodoDto>(todo);
 
             return Results.CreatedAtRoute(
                 "GetTodoById",
@@ -163,7 +163,7 @@ namespace Todo.Api.Features.Todos
 
             await todo.SaveAsync();
 
-            var response = mapper.Map<TodoDtos>(todo);
+            var response = mapper.Map<TodoDto>(todo);
 
             return Results.Ok(response);
         }
@@ -185,7 +185,7 @@ namespace Todo.Api.Features.Todos
 
             await todo.SaveAsync();
 
-            var response = mapper.Map<TodoDtos>(todo);
+            var response = mapper.Map<TodoDto>(todo);
 
             return Results.Ok(response);
         }

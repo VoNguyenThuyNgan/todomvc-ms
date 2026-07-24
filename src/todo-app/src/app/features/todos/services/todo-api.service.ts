@@ -4,6 +4,7 @@ import { Todo, TodoFilter } from '../models/todo.model';
 import { Observable } from 'rxjs';
 import { UpdateTodoRequest } from '../dtos/update-todo.request';
 import { ToggleAllTodosRequest } from '../dtos/toggle-all-todos.request';
+import { CreateTodoRequest } from '../dtos/create-todo-request';
 import { environment } from '../../../../enviroments/environment';
 
 @Injectable({
@@ -12,7 +13,7 @@ import { environment } from '../../../../enviroments/environment';
 export class TodoApiService {
   private readonly http = inject(HttpClient);
 
-  private readonly baseUrl = 'https://localhost:5100/bff/todos';
+  private readonly baseUrl = `${environment.apiBaseUrl}/bff/todos`;
 
   getTodos(filter?: TodoFilter): Observable<Todo[]> {
     if (!filter || filter === 'all') {
@@ -26,14 +27,14 @@ export class TodoApiService {
     return this.http.get<Todo>(`${this.baseUrl}/${id}`);
   }
 
-  createTodo(title: string): Observable<Todo> {
+  createTodo(request: CreateTodoRequest): Observable<Todo> {
     return this.http.post<Todo>(this.baseUrl, {
-      title,
+      request,
     });
   }
 
-  updateTodo(id: string, request: UpdateTodoRequest): Observable<void> {
-    return this.http.put<void>(`${this.baseUrl}/${id}`, request);
+  updateTodo(id: string, request: UpdateTodoRequest): Observable<Todo> {
+    return this.http.put<Todo>(`${this.baseUrl}/${id}`, request);
   }
 
   toggleTodo(id: string): Observable<void> {
