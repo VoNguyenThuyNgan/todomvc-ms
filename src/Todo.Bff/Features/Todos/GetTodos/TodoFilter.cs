@@ -1,4 +1,4 @@
-﻿namespace Todo.Bff.Features.Todos
+﻿namespace Todo.Bff.Features.Todos.GetTodos
 {
     public enum TodoFilter
     {
