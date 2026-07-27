@@ -13,7 +13,7 @@ import { environment } from '../../../../enviroments/environment';
 export class TodoApiService {
   private readonly http = inject(HttpClient);
 
-  private readonly baseUrl = `${environment.apiBaseUrl}/bff/todos`;
+  private readonly baseUrl = `${environment.apiBaseUrl}/todos`;
 
   getTodos(filter?: TodoFilter): Observable<Todo[]> {
     if (!filter || filter === 'all') {
@@ -28,9 +28,9 @@ export class TodoApiService {
   }
 
   createTodo(request: CreateTodoRequest): Observable<Todo> {
-    return this.http.post<Todo>(this.baseUrl, {
+    return this.http.post<Todo>(this.baseUrl, 
       request,
-    });
+    );
   }
 
   updateTodo(id: string, request: UpdateTodoRequest): Observable<Todo> {

@@ -8,6 +8,7 @@ import { filter, Subscription } from 'rxjs';
 import { TodoHeaderComponent } from '../todo-header-component/todo-header-component';
 import { TodoListComponent } from '../todo-list-component/todo-list-component';
 import { TodoFooterComponent } from '../todo-footer-component/todo-footer-component';
+import { UpdateTodoInput } from '../../models/todo.model';
 
 @Component({
   selector: 'app-todos-component',
@@ -32,19 +33,28 @@ export class TodosComponent implements OnInit, OnDestroy {
 
   ngOnInit(): void {
     this.store.loadTodos();
+
+    this.updateFilterFromUrl();
+
     this.sub = this.router.events
       .pipe(filter((event) => event instanceof NavigationEnd))
       .subscribe(() => {
         const url = this.router.url;
 
-        if (url.includes('/active')) {
-          this.store.setFilter('active');
-        } else if (url.includes('/completed')) {
-          this.store.setFilter('completed');
-        } else {
-          this.store.setFilter('all');
-        }
+        this.updateFilterFromUrl();
       });
+  }
+
+  private updateFilterFromUrl(): void {
+    const url = this.router.url;
+
+    if (url.includes('/active')) {
+      this.store.setFilter('active');
+    } else if (url.includes('/completed')) {
+      this.store.setFilter('completed');
+    } else {
+      this.store.setFilter('all');
+    }
   }
 
   ngOnDestroy(): void {
@@ -52,7 +62,10 @@ export class TodosComponent implements OnInit, OnDestroy {
   }
 
   addTodo(title: string): void {
-    this.store.addTodo(title);
+    this.store.addTodo({
+      title,
+      dueAt: null,
+    });
   }
 
   toggleTodo(id: string): void {
@@ -63,7 +76,7 @@ export class TodosComponent implements OnInit, OnDestroy {
     this.store.deleteTodo(id);
   }
 
-  updateTodo(data: { id: string; title: string }): void {
+  updateTodo(data: UpdateTodoInput): void {
     this.store.updateTodo(data);
   }
 

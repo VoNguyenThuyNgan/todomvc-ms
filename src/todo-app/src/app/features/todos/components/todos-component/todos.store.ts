@@ -3,10 +3,9 @@ import { TodosState } from './todos.state';
 import { ComponentStore } from '@ngrx/component-store';
 import { EMPTY, switchMap, tap } from 'rxjs';
 import { TodoApiService } from '../../services/todo-api.service';
-import { Todo, TodoFilter } from '../../models/todo.model';
+import { Todo, TodoFilter, UpdateTodoInput } from '../../models/todo.model';
 import { handleEffect } from '../../../../core/utils/effect.helper';
 import { CreateTodoRequest } from '../../dtos/create-todo-request';
-import { request } from 'http';
 
 const initialState: TodosState = {
   todos: [],
@@ -19,7 +18,6 @@ export class TodosStore extends ComponentStore<TodosState> {
   private readonly todoApi = inject(TodoApiService);
   constructor() {
     super(initialState);
-    console.log('TodosStore initialized');
   }
 
   // Selector
@@ -72,25 +70,17 @@ export class TodosStore extends ComponentStore<TodosState> {
     todos: [todo, ...state.todos],
   }));
 
-  readonly updateTodoInState = this.updater(
-    (
-      state,
-      data: {
-        id: string;
-        title: string;
-      },
-    ) => ({
-      ...state,
-      todos: state.todos.map((todo) =>
-        todo.id === data.id
-          ? {
-              ...todo,
-              title: data.title,
-            }
-          : todo,
-      ),
-    }),
-  );
+  readonly updateTodoInState = this.updater((state, data: UpdateTodoInput) => ({
+    ...state,
+    todos: state.todos.map((todo) =>
+      todo.id === data.id
+        ? {
+            ...todo,
+            title: data.title,
+          }
+        : todo,
+    ),
+  }));
 
   readonly removeTodoFromState = this.updater((state, id: string) => ({
     ...state,
@@ -146,10 +136,7 @@ export class TodosStore extends ComponentStore<TodosState> {
     ),
   );
 
-  readonly updateTodo = this.effect<{
-    id: string;
-    title: string;
-  }>((trigger$) =>
+  readonly updateTodo = this.effect<UpdateTodoInput>((trigger$) =>
     trigger$.pipe(
       tap(() => {
         this.setLoading(true);
@@ -168,7 +155,7 @@ export class TodosStore extends ComponentStore<TodosState> {
           this.todoApi.updateTodo(todo.id, {
             title: data.title,
             isCompleted: todo.isCompleted,
-            dueAt: todo.dueAt
+            dueAt: todo.dueAt,
           }),
           () => this.updateTodoInState(data),
           (err) => this.setError(err.message ?? 'Update Todo failed'),

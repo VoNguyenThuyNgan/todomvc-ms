@@ -1,7 +1,4 @@
-export type ReminderState =
-  | 'Pending'
-  | 'Snoozed'
-  | 'Dismissed';
+export type ReminderState = 'Pending' | 'Snoozed' | 'Dismissed';
 
 export interface Reminder {
   id: string;

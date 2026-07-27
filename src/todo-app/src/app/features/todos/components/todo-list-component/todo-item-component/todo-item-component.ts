@@ -1,6 +1,6 @@
 import { Component, ElementRef, input, output, viewChild } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { Todo } from '../../../models/todo.model';
+import { Todo, UpdateTodoInput } from '../../../models/todo.model';
 
 @Component({
   selector: 'app-todo-item-component',
@@ -13,10 +13,7 @@ export class TodoItemComponent {
   todo = input.required<Todo>();
   toggleTodoChange = output<string>(); //emit(id)
   removeTodoChange = output<string>(); //emit(id)
-  updateTodoChange = output<{
-    id: string;
-    title: string;
-  }>();
+  updateTodoChange = output<UpdateTodoInput>();
 
   editing = false;
   draftTitle = '';
@@ -35,7 +32,7 @@ export class TodoItemComponent {
     this.editing = true;
     this.draftTitle = this.todo().title;
     setTimeout(() => {
-      (this.inputRef()?.nativeElement.focus(), 0);
+      (this.inputRef()?.nativeElement.focus());
     });
   }
 

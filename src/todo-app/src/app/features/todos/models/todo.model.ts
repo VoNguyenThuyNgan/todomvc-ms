@@ -10,5 +10,4 @@ export type TodoFilter = 'all' | 'active' | 'completed';
 export interface UpdateTodoInput {
   id: string;
   title: string;
-  dueAt: string | null;
 }

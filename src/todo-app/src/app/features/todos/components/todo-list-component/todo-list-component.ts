@@ -1,6 +1,6 @@
 import { Component, input, output } from '@angular/core';
 import { TodoItemComponent } from './todo-item-component/todo-item-component';
-import { Todo, UpdateTodoTitle } from '../../models/todo.model';
+import { Todo, UpdateTodoInput } from '../../models/todo.model';
 
 @Component({
   selector: 'app-todo-list-component',
@@ -14,7 +14,7 @@ export class TodoListComponent {
 
   toggleTodoChange = output<string>();
   removeTodoChange = output<string>();
-  updateTodoChange = output<UpdateTodoTitle>();
+  updateTodoChange = output<UpdateTodoInput>();
   toggleAllTodosChange = output<boolean>();
 
   allCompleted(): boolean {
