@@ -1,4 +1,6 @@
 ﻿using AutoMapper;
+using Todo.Api.Features.Todos.CreateTodo;
+using Todo.Api.Features.Todos.UpdateTodo;
 
 namespace Todo.Api.Features.Todos
 {

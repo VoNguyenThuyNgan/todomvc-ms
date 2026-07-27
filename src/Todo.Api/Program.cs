@@ -5,7 +5,7 @@ using MongoDB.Driver;
 using MongoDB.Entities;
 using Todo.Api.Common.Configuration;
 using Todo.Api.Features.Reminders;
-using Todo.Api.Features.Todos;
+using Todo.Api.Features.Todos.CreateTodo;
 
 var builder = WebApplication.CreateBuilder(args);
 
