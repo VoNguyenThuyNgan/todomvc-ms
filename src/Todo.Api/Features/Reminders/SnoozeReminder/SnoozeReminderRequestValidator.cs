@@ -1,9 +1,8 @@
 ﻿using FluentValidation;
 
-namespace Todo.Api.Features.Reminders
+namespace Todo.Api.Features.Reminders.SnoozeReminder
 {
-    public class SnoozeReminderRequestValidator
-    : AbstractValidator<SnoozeReminderRequest>
+    public class SnoozeReminderRequestValidator : AbstractValidator<SnoozeReminderRequest>
     {
         public SnoozeReminderRequestValidator()
         {
