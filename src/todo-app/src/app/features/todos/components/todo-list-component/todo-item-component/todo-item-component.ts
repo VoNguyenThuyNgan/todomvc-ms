@@ -1,11 +1,12 @@
 import { Component, ElementRef, input, output, viewChild } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { Todo, UpdateTodoInput } from '../../../models/todo.model';
+import { InputComponent } from '../../../../../shared/components/input-component/input-component';
 
 @Component({
   selector: 'app-todo-item-component',
   standalone: true,
-  imports: [FormsModule],
+  imports: [FormsModule, InputComponent],
   templateUrl: './todo-item-component.html',
   styleUrl: './todo-item-component.scss',
 })

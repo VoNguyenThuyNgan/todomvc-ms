@@ -1,4 +1,4 @@
-import { Todo, TodoFilter } from "../../models/todo.model";
+import { Todo, TodoFilter } from "../models/todo.model";
 export interface TodosState {
     todos: Todo[];
     filter: TodoFilter;

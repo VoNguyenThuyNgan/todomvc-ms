@@ -2,10 +2,10 @@ import { inject, Injectable } from '@angular/core';
 import { TodosState } from './todos.state';
 import { ComponentStore } from '@ngrx/component-store';
 import { EMPTY, switchMap, tap } from 'rxjs';
-import { TodoApiService } from '../../services/todo-api.service';
-import { Todo, TodoFilter, UpdateTodoInput } from '../../models/todo.model';
-import { handleEffect } from '../../../../core/utils/effect.helper';
-import { CreateTodoRequest } from '../../dtos/create-todo-request';
+import { TodoApiService } from '../services/todo-api.service';
+import { Todo, TodoFilter, UpdateTodoInput } from '../models/todo.model';
+import { handleEffect } from '../../../core/utils/effect.helper';
+import { CreateTodoRequest } from '../dtos/create-todo-request';
 
 const initialState: TodosState = {
   todos: [],

@@ -1,10 +1,13 @@
 <header class="header">
-    <h1>todos</h1>
+  <h1>todos</h1>
 
-    <input 
-        class="new-todo" 
-        [(ngModel)]="title"
-        placeholder="What needs to be done?"
-        autofocus
-        (keyup.enter)="addTodo()">
+  <app-input-component
+    [(value)]="title"
+    cssClass="new-todo"
+    placeholder="What needs to be done?"
+    [autofocus]="true"
+    ariaLabel="New Todo"
+    (enter)="addTodo()"
+  >
+  </app-input-component>
 </header>

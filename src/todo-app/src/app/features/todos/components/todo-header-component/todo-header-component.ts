@@ -1,9 +1,10 @@
 import { Component, Output, EventEmitter } from '@angular/core';
 import { FormsModule } from '@angular/forms';
+import { InputComponent } from '../../../../shared/components/input-component/input-component';
 
 @Component({
   selector: 'app-todo-header-component',
-  imports: [FormsModule],
+  imports: [FormsModule, InputComponent],
   standalone: true,
   templateUrl: './todo-header-component.html',
   styleUrl: './todo-header-component.scss',

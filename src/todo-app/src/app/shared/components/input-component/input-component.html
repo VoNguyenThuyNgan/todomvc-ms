@@ -1,0 +1,10 @@
+<input
+  [class]="cssClass()"
+  [(ngModel)]="value"
+  [placeholder]="placeholder()"
+  [autofocus]="autofocus()"
+  [attr.aria-label]="ariaLabel()"
+  (keyup.enter)="enter.emit()"
+  (keyup.escape)="escape.emit()"
+  (blur)="blurEvent.emit()"
+/>

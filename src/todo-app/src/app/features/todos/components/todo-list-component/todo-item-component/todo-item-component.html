@@ -9,14 +9,15 @@
     <button class="destroy" aria-label="Delete-todo" (click)="onRemove()"></button>
   </div>
 
-  @if (editing){
-    <input
-        #todoInputRef
-        class="edit"
-        [(ngModel)]="draftTitle"
-        aria-label="Edit-todo"
-        (blur)="onCommitEdit()"
-        (keyup.enter)="onCommitEdit()"
-        (keyup.escape)="onCancelEdit()">
+  @if (editing) {
+    <app-input-component
+      [(value)]="draftTitle"
+      cssClass="edit"
+      ariaLabel="Edit Todo"
+      (blurEvent)="onCommitEdit()"
+      (enter)="onCommitEdit()"
+      (escape)="onCancelEdit()"
+    >
+    </app-input-component>
   }
 </li>

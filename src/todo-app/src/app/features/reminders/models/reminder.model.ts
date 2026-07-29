@@ -1,20 +1,11 @@
-export type ReminderState = 'Pending' | 'Snoozed' | 'Dismissed';
+import { ReminderState } from './reminder-state.enum';
 
 export interface Reminder {
   id: string;
   todoId: string;
+  todoTitle: string;
   dueAt: string;
   state: ReminderState;
   snoozeUntil: string | null;
   firedAt: string;
-}
-
-export interface SnoozeReminderRequest {
-  minutes: number;
-}
-
-export interface UpcomingTodo {
-  todoId: string;
-  title: string;
-  dueAt: string;
 }
