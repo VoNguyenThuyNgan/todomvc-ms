@@ -1,0 +1,19 @@
+<div class="notification-bell">
+
+  <span class="icon">
+    🔔
+  </span>
+
+  @if (pendingCount$ | async; as count) {
+
+    @if (count > 0) {
+
+      <span class="badge">
+        {{ count }}
+      </span>
+
+    }
+
+  }
+
+</div>

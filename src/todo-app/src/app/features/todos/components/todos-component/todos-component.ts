@@ -11,11 +11,12 @@ import { TodoFooterComponent } from '../todo-footer-component/todo-footer-compon
 import { UpdateTodoInput } from '../../models/todo.model';
 import { RemindersStore } from '../../../reminders/store/reminders.store';
 import { RemindersPanelComponent } from '../../../reminders/components/reminders-panel-component/reminders-panel-component';
+import { NotificationBellComponent } from '../../../reminders/components/notification-bell-component/notification-bell-component';
 
 @Component({
   selector: 'app-todos-component',
   standalone: true,
-  imports: [AsyncPipe, TodoHeaderComponent, TodoListComponent, TodoFooterComponent, RemindersPanelComponent],
+  imports: [AsyncPipe, TodoHeaderComponent, TodoListComponent, TodoFooterComponent, RemindersPanelComponent, NotificationBellComponent],
   providers: [provideComponentStore(TodosStore), provideComponentStore(RemindersStore)],
   templateUrl: './todos-component.html',
   styleUrl: './todos-component.scss',
