@@ -83,6 +83,7 @@ namespace Todo.Api.Features.Reminders
                 var reminder = new Reminder
                 {
                     TodoId = todo.ID,
+                    TodoTitle = todo.Title,
                     DueAt = todo.DueAt!.Value,
                     State = ReminderState.Pending,
                     FireAt = now

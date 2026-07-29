@@ -1,9 +1,10 @@
 ﻿using AutoMapper;
+using Carter;
 using MongoDB.Entities;
 
 namespace Todo.Api.Features.Todos.ToggleTodo
 {
-    public class ToggleTodoEndpoint
+    public class ToggleTodoEndpoint : ICarterModule
     {
         public void AddRoutes(IEndpointRouteBuilder app)
         {

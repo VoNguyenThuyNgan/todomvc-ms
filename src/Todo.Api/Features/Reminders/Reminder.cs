@@ -4,6 +4,7 @@ namespace Todo.Api.Features.Reminders
     public class Reminder : Entity
     {
         public string TodoId { get; set; } = string.Empty;
+        public string TodoTitle { get; set; } = default!;
         public DateTime DueAt { get; set; }
         public ReminderState State { get; set; }
         public DateTime? SnoozeUntil { get; set; }
