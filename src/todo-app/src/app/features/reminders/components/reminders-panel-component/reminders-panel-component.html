@@ -1,0 +1,47 @@
+<div class="reminders-panel">
+
+  <h3>🔔 Reminders</h3>
+
+  @if (pending$ | async; as reminders) {
+
+    @if (reminders.length === 0) {
+
+      <p>No reminders.</p>
+
+    } @else {
+
+      @for (reminder of reminders; track reminder.id) {
+
+        <div class="reminder-item">
+
+          <h4>{{ reminder.todoTitle }}</h4>
+
+          <p>
+            Due:
+            {{ reminder.dueAt | date:'dd/MM/yyyy HH:mm' }}
+          </p>
+
+          <button
+            (click)="snooze10m(reminder.id)">
+            Snooze 10m
+          </button>
+
+          <button
+            (click)="snooze1h(reminder.id)">
+            Snooze 1h
+          </button>
+
+          <button
+            (click)="dismiss(reminder.id)">
+            Dismiss
+          </button>
+
+        </div>
+
+      }
+
+    }
+
+  }
+
+</div>

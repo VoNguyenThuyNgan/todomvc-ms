@@ -10,11 +10,12 @@ import { TodoListComponent } from '../todo-list-component/todo-list-component';
 import { TodoFooterComponent } from '../todo-footer-component/todo-footer-component';
 import { UpdateTodoInput } from '../../models/todo.model';
 import { RemindersStore } from '../../../reminders/store/reminders.store';
+import { RemindersPanelComponent } from '../../../reminders/components/reminders-panel-component/reminders-panel-component';
 
 @Component({
   selector: 'app-todos-component',
   standalone: true,
-  imports: [AsyncPipe, TodoHeaderComponent, TodoListComponent, TodoFooterComponent],
+  imports: [AsyncPipe, TodoHeaderComponent, TodoListComponent, TodoFooterComponent, RemindersPanelComponent],
   providers: [provideComponentStore(TodosStore), provideComponentStore(RemindersStore)],
   templateUrl: './todos-component.html',
   styleUrl: './todos-component.scss',
