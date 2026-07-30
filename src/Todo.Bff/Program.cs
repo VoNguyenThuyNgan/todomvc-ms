@@ -1,6 +1,7 @@
 using Carter;
 using Todo.Bff.Clients.Reminders;
 using Todo.Bff.Clients.Todos;
+using Todo.Bff.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -14,14 +15,9 @@ builder.Services.AddHttpClient("TodoApi", client =>
         builder.Configuration["TodoApi:BaseUrl"]!);
 });
 
-builder.Services.AddScoped<
-    ITodoApiClient,
-    TodoApiClient>();
-
-builder.Services.AddScoped<
-    IReminderApiClient,
-    ReminderApiClient>();
-
+builder.Services.AddScoped<ITodoApiClient, TodoApiClient>();
+builder.Services.AddScoped<IReminderApiClient, ReminderApiClient>();
+builder.Services.AddScoped<ReminderEventService>();
 
 // CORS
 builder.Services.AddCors(options =>
