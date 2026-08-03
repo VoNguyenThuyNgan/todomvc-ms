@@ -16,28 +16,36 @@ public class StreamRemindersEndpoint : ICarterModule
 
     private static async Task Handle(HttpContext context, ReminderEventService reminderEventService)
     {
-        context.Response.Headers.Append("Content-Type","text/event-stream");
-        context.Response.Headers.Append("Cache-Control","no-cache");
-        context.Response.Headers.Append("Connection","keep-alive");
+        context.Response.StatusCode = StatusCodes.Status200OK;
+        context.Response.ContentType = "text/event-stream";
+
+        context.Response.Headers.CacheControl = "no-cache";
+        context.Response.Headers.Append("X-Accel-Buffering", "no");
+
+        await context.Response.Body.FlushAsync();
 
         var cancellationToken =
             context.RequestAborted;
+
+        var knownIds = new HashSet<string>();
 
         while (!cancellationToken.IsCancellationRequested)
         {
             try
             {
                 var reminders =
-                    await reminderEventService.GetNewRemindersAsync(cancellationToken);
+                    await reminderEventService.GetNewRemindersAsync(knownIds, cancellationToken);
 
                 if (reminders.Count == 0)
                 {
+                    Console.WriteLine("Heartbeat");
                     await reminderEventService.WriteHeartbeatAsync(context.Response,cancellationToken);
                 }
                 else
                 {
                     foreach (var reminder in reminders)
                     {
+                        Console.WriteLine($"Sending reminder {reminder.Id}");
                         await reminderEventService.WriteEventAsync(context.Response, reminder, cancellationToken);
                     }
                 }

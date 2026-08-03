@@ -7,14 +7,13 @@ namespace Todo.Bff.Services;
 public class ReminderEventService
 {
     private readonly IReminderApiClient _client;
-    private readonly HashSet<string> _knownReminderIds = [];
 
     public ReminderEventService(IReminderApiClient client)
     {
         _client = client;
     }
 
-    public async Task<List<ReminderDto>> GetNewRemindersAsync(CancellationToken cancellationToken = default)
+    public async Task<List<ReminderDto>> GetNewRemindersAsync(HashSet<string> knownIds, CancellationToken cancellationToken = default)
     {
         var response = await _client.GetRemindersAsync(ReminderState.Pending);
         response.EnsureSuccessStatusCode();
@@ -25,41 +24,41 @@ public class ReminderEventService
             ?? [];
 
         var newReminders = reminders
-            .Where(x => !_knownReminderIds.Contains(x.Id))
+            .Where(x => !knownIds.Contains(x.Id))
             .ToList();
 
         foreach (var reminder in newReminders)
         {
-            _knownReminderIds.Add(reminder.Id);
+            knownIds.Add(reminder.Id);
         }
+
+        Console.WriteLine($"Pending: {reminders.Count}");
+        Console.WriteLine($"Known: {knownIds.Count}");
+        Console.WriteLine($"New: {newReminders.Count}");
 
         return newReminders;
     }
 
     public async Task WriteEventAsync(HttpResponse response, ReminderDto reminder, CancellationToken cancellationToken)
     {
-        var json = JsonSerializer.Serialize(reminder);
+        Console.WriteLine($"SEND EVENT: {reminder.Id}");
 
-        await response.WriteAsync(
-                $"""
-                event: reminder-fired
-                data: {json}
+        var json = JsonSerializer.Serialize(reminder, new JsonSerializerOptions
+        {
+            PropertyNamingPolicy = JsonNamingPolicy.CamelCase
+        });
 
-                """,
-            cancellationToken);
+        await response.WriteAsync($"id: {reminder.Id}\n", cancellationToken);
+        await response.WriteAsync("event: reminder-fired\n", cancellationToken);
+        await response.WriteAsync($"data: {json}\n\n", cancellationToken);
 
         await response.Body.FlushAsync(cancellationToken);
     }
 
     public async Task WriteHeartbeatAsync(HttpResponse response,CancellationToken cancellationToken)
     {
-        await response.WriteAsync(
-                """
-                event: heartbeat
-                data: connected
-
-                """,
-            cancellationToken);
+        await response.WriteAsync("event: heartbeat\n", cancellationToken);
+        await response.WriteAsync("data: connected\n\n", cancellationToken);
 
         await response.Body.FlushAsync(cancellationToken);
     }
