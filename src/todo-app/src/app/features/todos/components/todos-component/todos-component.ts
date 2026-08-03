@@ -24,6 +24,7 @@ import { NotificationBellComponent } from '../../../reminders/components/notific
 export class TodosComponent implements OnInit, OnDestroy {
   private readonly store = inject(TodosStore);
   private readonly router = inject(Router);
+  private readonly remindersStore = inject(RemindersStore)
   private sub?: Subscription;
 
   readonly todos$ = this.store.todos$;
@@ -36,6 +37,9 @@ export class TodosComponent implements OnInit, OnDestroy {
 
   ngOnInit(): void {
     this.store.loadTodos();
+    
+    this.remindersStore.loadReminders();
+    this.remindersStore.connectStream();
 
     this.updateFilterFromUrl();
 
@@ -67,7 +71,7 @@ export class TodosComponent implements OnInit, OnDestroy {
   addTodo(title: string): void {
     this.store.addTodo({
       title,
-      dueAt: null,
+      dueAt: new Date(Date.now() + 5000).toISOString(),
     });
   }
 

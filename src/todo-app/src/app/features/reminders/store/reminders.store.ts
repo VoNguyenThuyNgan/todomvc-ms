@@ -8,6 +8,7 @@ import { Reminder } from '../models/reminder.model';
 import { UpcomingTodo } from '../models/upcoming-todo.model';
 import { ReminderState } from '../models/reminder-state.enum';
 import { SnoozeReminderRequest } from '../dtos/snooze-reminder.request';
+import { ReminderStreamService } from '../services/reminder-stream.service';
 
 const initialState: RemindersState = {
   pending: [],
@@ -19,6 +20,7 @@ const initialState: RemindersState = {
 @Injectable()
 export class RemindersStore extends ComponentStore<RemindersState> {
   private readonly reminderApi = inject(ReminderApiService);
+  private readonly reminderStream = inject(ReminderStreamService);
 
   constructor() {
     super(initialState);
@@ -63,6 +65,12 @@ export class RemindersStore extends ComponentStore<RemindersState> {
   readonly snoozeReminderInState = this.updater((state, id: string) => ({
     ...state,
     pending: state.pending.filter((reminder) => reminder.id !== id),
+  }));
+
+  readonly addReminder = this.updater((state, reminder: Reminder) => ({
+    ...state,
+
+    pending: [reminder, ...state.pending],
   }));
 
   readonly loadReminders = this.effect<void>((trigger$) =>
@@ -132,6 +140,27 @@ export class RemindersStore extends ComponentStore<RemindersState> {
           (err) => this.setError(err.message ?? 'Snooze reminder failed'),
           () => this.setLoading(false),
         ),
+      ),
+    ),
+  );
+
+  readonly connectStream = this.effect<void>((trigger$) =>
+    trigger$.pipe(
+      switchMap(() =>
+        this.reminderStream
+          .connect()
+
+          .pipe(
+            tap((reminder) => {
+              console.log('[STORE] Reminder');
+
+              console.log(reminder);
+
+              this.addReminder(reminder);
+
+              this.setConnected(true);
+            }),
+          ),
       ),
     ),
   );
