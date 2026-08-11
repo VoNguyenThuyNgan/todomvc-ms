@@ -1,0 +1,57 @@
+name: todomvc-local
+
+services:
+    mongo:
+        image: mongo:7
+        container_name: mongo_container
+        restart: unless-stopped
+        ports:
+            - "27017:27017"
+        volumes:
+            - mongo_data:/data/db
+        environment:
+            MONGO_INITDB_DATABASE: TodoMVCDb
+
+    mssql:
+        image: mcr.microsoft.com/mssql/server:2022-latest
+        container_name: servicebus-sql
+        restart: unless-stopped
+
+        environment:
+            ACCEPT_EULA: ${ACCEPT_EULA}
+            MSSQL_SA_PASSWORD: ${MSSQL_SA_PASSWORD}
+
+        ports:
+        - "14333:1433"
+
+        healthcheck:
+            test: /opt/mssql-tools18/bin/sqlcmd -C -S localhost -U sa -P "$$MSSQL_SA_PASSWORD" -Q "SELECT 1" || exit 1
+            interval: 10s
+            timeout: 5s
+            retries: 20
+
+    servicebus:
+        image: mcr.microsoft.com/azure-messaging/servicebus-emulator:latest
+        container_name: servicebus-emulator
+
+        pull_policy: always
+
+        depends_on:
+            mssql:
+                condition: service_healthy
+
+        volumes:
+            - "${CONFIG_PATH}:/ServiceBus_Emulator/ConfigFiles/Config.json"
+
+        ports:
+            - "5672:5672"
+            - "5300:${EMULATOR_HTTP_PORT}"
+
+        environment:
+            SQL_SERVER: mssql
+            MSSQL_SA_PASSWORD: ${MSSQL_SA_PASSWORD}
+            ACCEPT_EULA: ${ACCEPT_EULA}
+            EMULATOR_HTTP_PORT: ${EMULATOR_HTTP_PORT}
+
+volumes:
+    mongo_data:
