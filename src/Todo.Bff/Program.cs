@@ -21,7 +21,6 @@ builder.Services.AddHttpClient("TodoApi", client =>
 
 builder.Services.AddScoped<ITodoApiClient, TodoApiClient>();
 builder.Services.AddScoped<IReminderApiClient, ReminderApiClient>();
-builder.Services.AddScoped<ReminderEventService>();
 builder.Services.AddSingleton<
     IReminderEventStream,
     ReminderEventStream>();
