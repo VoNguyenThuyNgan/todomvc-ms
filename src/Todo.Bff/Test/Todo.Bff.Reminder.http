@@ -49,7 +49,7 @@ POST {{host}}/bff/todos
 Content-Type: application/json
 
 {
-    "title": "Test connect SSE to Angular",
+    "title": "ASB BFF",
     "dueAt": "2026-07-27"
 }
 

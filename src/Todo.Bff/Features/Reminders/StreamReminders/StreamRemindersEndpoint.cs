@@ -1,4 +1,6 @@
 ﻿using Carter;
+using System.Text.Json;
+using System.Threading.Channels;
 using Todo.Bff.Services;
 
 namespace Todo.Bff.Features.Reminders.StreamReminders;
@@ -14,7 +16,7 @@ public class StreamRemindersEndpoint : ICarterModule
             .WithDescription("Streams reminder events to frontend.");
     }
 
-    private static async Task Handle(HttpContext context, ReminderEventService reminderEventService)
+    private static async Task Handle(HttpContext context, IReminderEventStream eventStream)
     {
         context.Response.StatusCode = StatusCodes.Status200OK;
         context.Response.ContentType = "text/event-stream";
@@ -24,45 +26,63 @@ public class StreamRemindersEndpoint : ICarterModule
 
         await context.Response.Body.FlushAsync();
 
-        var cancellationToken =
-            context.RequestAborted;
+        var cancellationToken = context.RequestAborted;
+        var channel = Channel.CreateUnbounded<ReminderDto>();
 
-        var knownIds = new HashSet<string>();
+        eventStream.Subscribe(channel);
 
-        while (!cancellationToken.IsCancellationRequested)
+
+        try
         {
-            try
+            await context.Response.Body.FlushAsync(
+                cancellationToken);
+
+            await foreach (
+                var reminder in channel.Reader.ReadAllAsync(
+                    cancellationToken))
             {
-                var reminders =
-                    await reminderEventService.GetNewRemindersAsync(knownIds, cancellationToken);
-
-                if (reminders.Count == 0)
-                {
-                    Console.WriteLine("Heartbeat");
-                    await reminderEventService.WriteHeartbeatAsync(context.Response,cancellationToken);
-                }
-                else
-                {
-                    foreach (var reminder in reminders)
-                    {
-                        Console.WriteLine($"Sending reminder {reminder.Id}");
-                        await reminderEventService.WriteEventAsync(context.Response, reminder, cancellationToken);
-                    }
-                }
-
-                await Task.Delay(
-                    TimeSpan.FromSeconds(5),
+                await WriteEventAsync(
+                    context.Response,
+                    reminder,
                     cancellationToken);
             }
-            catch (OperationCanceledException)
-            {
-                break;
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine(ex);
-                break;
-            }
         }
+        catch (OperationCanceledException)
+        {
+            // Client disconnected.
+        }
+        finally
+        {
+            eventStream.Unsubscribe(channel);
+        }
+    }
+
+    private static async Task WriteEventAsync(
+        HttpResponse response,
+        ReminderDto reminder,
+        CancellationToken cancellationToken)
+    {
+        var json = JsonSerializer.Serialize(
+            reminder,
+            new JsonSerializerOptions
+            {
+                PropertyNamingPolicy =
+                    JsonNamingPolicy.CamelCase
+            });
+
+        await response.WriteAsync(
+            $"id: {reminder.Id}\n",
+            cancellationToken);
+
+        await response.WriteAsync(
+            "event: reminder-fired\n",
+            cancellationToken);
+
+        await response.WriteAsync(
+            $"data: {json}\n\n",
+            cancellationToken);
+
+        await response.Body.FlushAsync(
+            cancellationToken);
     }
 }
