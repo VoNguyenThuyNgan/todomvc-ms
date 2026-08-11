@@ -1,17 +1,21 @@
 ﻿using MongoDB.Entities;
+using Todo.Api.Features.Reminders.Contracts;
 using Todo.Api.Features.Todos;
+using Todo.Api.Services;
 namespace Todo.Api.Features.Reminders
 {
     public class ReminderScanner : BackgroundService
     {
         private readonly ILogger<ReminderScanner> _logger;
+        private readonly IServiceBusPublisher _publisher;
 
-        public ReminderScanner(ILogger<ReminderScanner> logger)
+        public ReminderScanner(ILogger<ReminderScanner> logger, IServiceBusPublisher publisher)
         {
             _logger = logger;
+            _publisher = publisher;
+
         }
-        protected override async Task ExecuteAsync(
-        CancellationToken stoppingToken)
+        protected override async Task ExecuteAsync(CancellationToken stoppingToken)
         {
             _logger.LogInformation("Reminder scanner started.");
 
@@ -90,6 +94,19 @@ namespace Todo.Api.Features.Reminders
                 };
 
                 await reminder.SaveAsync();
+
+                var notificationEvent = new ReminderNotificationEvent
+                {
+                    Id = reminder.ID,
+                    TodoId = reminder.TodoId,
+                    TodoTitle = reminder.TodoTitle,
+                    DueAt = reminder.DueAt,
+                    State = (int)reminder.State,
+                    SnoozeUntil = reminder.SnoozeUntil,
+                    FiredAt = reminder.FireAt
+                };
+
+                await _publisher.PublishAsync(notificationEvent, cancellationToken);
 
                 _logger.LogInformation(
                     "Reminder created for Todo {TodoId}.",
