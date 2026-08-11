@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using Carter;
 using FluentValidation;
+using MediatR;
 using MongoDB.Entities;
 using Todo.Api.Common.Validation;
 
@@ -13,7 +14,6 @@ namespace Todo.Api.Features.Todos.UpdateTodo
             var group = app.MapGroup("api/todos").WithTags("Todos");
 
             group.MapPut("/{id}", Handle)
-                .AddEndpointFilter<ValidationFilter<UpdateTodoRequest>>()
                 .WithName("UpdateTodo")
                 .WithSummary("Update todo")
                 .WithDescription("Updates an existing todo.")
@@ -22,17 +22,17 @@ namespace Todo.Api.Features.Todos.UpdateTodo
                 .ProducesProblem(StatusCodes.Status404NotFound);
         }
 
-        private static async Task<IResult> Handle(string id, UpdateTodoRequest request, IValidator<UpdateTodoRequest> validator, IMapper mapper)
+        private static async Task<IResult> Handle(string id, UpdateTodoRequest request, ISender sender, CancellationToken cancellationToken)
         {
-            var validationResult = await validator.ValidateAsync(request);
+            var command = new UpdateTodoCommand(
+           id,
+           request.Title,
+           request.IsCompleted,
+           request.DueAt);
 
-            if (!validationResult.IsValid)
-            {
-                return Results.ValidationProblem(validationResult.ToDictionary());
-            }
-
-            var todo = await DB.Find<TodoItem>()
-                .OneAsync(id);
+            var todo = await sender.Send(
+                command,
+                cancellationToken);
 
             if (todo is null)
             {
@@ -42,13 +42,7 @@ namespace Todo.Api.Features.Todos.UpdateTodo
                     statusCode: StatusCodes.Status404NotFound);
             }
 
-            mapper.Map(request, todo);
-
-            await todo.SaveAsync();
-
-            var response = mapper.Map<TodoDto>(todo);
-
-            return Results.Ok(response);
+            return Results.Ok(todo);
         }
     }
 }

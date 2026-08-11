@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using Carter;
 using FluentValidation;
+using MediatR;
 using Microsoft.AspNetCore.Mvc.ModelBinding.Validation;
 using MongoDB.Entities;
 using Todo.Api.Common.Validation;
@@ -14,7 +15,6 @@ namespace Todo.Api.Features.Todos.CreateTodo
             var group = app.MapGroup("api/todos").WithTags("Todos");
 
             group.MapPost("/", Handle)
-                .AddEndpointFilter<ValidationFilter<CreateTodoRequest>>()
                 .WithName("CreateTodo")
                 .WithSummary("Create todo")
                 .WithDescription("Creates a new todo.")
@@ -22,20 +22,20 @@ namespace Todo.Api.Features.Todos.CreateTodo
                 .ProducesValidationProblem();
         }
 
-        private static async Task<IResult> Handle(CreateTodoRequest request, IMapper mapper)
+        private static async Task<IResult> Handle(CreateTodoRequest request, ISender sender, CancellationToken cancellationToken)
         {
-            var todo = mapper.Map<TodoItem>(request);
-            todo.CreateAt = DateTime.UtcNow;
-            todo.IsCompleted = false;
+            var command = new CreateTodoCommand(
+            request.Title,
+            request.DueAt);
 
-            await todo.SaveAsync();
-
-            var response = mapper.Map<TodoDto>(todo);
+            var todo = await sender.Send(
+                command,
+                cancellationToken);
 
             return Results.CreatedAtRoute(
                 "GetTodoById",
-                new { id = todo.ID },
-                response);
+                new { id = todo.Id },
+                todo);
         }
     }
 }

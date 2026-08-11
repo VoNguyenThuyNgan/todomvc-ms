@@ -14,6 +14,7 @@ namespace Todo.Api.Features.Todos
 
             CreateMap<CreateTodoRequest, TodoItem>();
             CreateMap<UpdateTodoRequest, TodoItem>();
+            CreateMap<CreateTodoCommand, TodoItem>();
         }
     }
 }

@@ -5,6 +5,7 @@ using Microsoft.Extensions.Options;
 using MongoDB.Driver;
 using MongoDB.Entities;
 using Todo.Api.Common.Configuration;
+using Todo.Api.Common.Validation;
 using Todo.Api.Features.Reminders;
 using Todo.Api.Features.Todos.CreateTodo;
 using Todo.Api.Services;
@@ -19,10 +20,16 @@ builder.Services.Configure<ServiceBusOptions>(
 
 // Services
 builder.Services.AddAutoMapper(typeof(Program).Assembly);
-builder.Services.AddValidatorsFromAssemblyContaining<CreateTodoRequestValidator>();
+builder.Services.AddValidatorsFromAssemblyContaining<CreateTodoCommandValidator>();
 builder.Services.AddCarter();
+builder.Services.AddMediatR(config =>
+{
+    config.RegisterServicesFromAssembly(typeof(Program).Assembly);
+
+    config.AddOpenBehavior(
+        typeof(ValidationBehavior<,>));
+});
 builder.Services.AddHostedService<ReminderScanner>();
-//builder.Services.AddHostedService<ReminderWorker>();
 builder.Services.AddSingleton(sp =>
 {
     var options = sp
@@ -32,6 +39,8 @@ builder.Services.AddSingleton(sp =>
     return new ServiceBusClient(options.ConnectionString);
 });
 builder.Services.AddSingleton<IServiceBusPublisher, ServiceBusPublisher>();
+
+
 
 // Swagger
 builder.Services.AddEndpointsApiExplorer();
