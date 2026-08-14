@@ -73,11 +73,11 @@ public class ReminderWorker : BackgroundService
         }
 
         _logger.LogInformation(
-            "Received reminder {ReminderId} from ASB.",
-            reminder.Id);
+            "Received reminder {ReminderId} from ASB. DeliveryCount={DeliveryCount}, MessageId={MessageId}",
+            reminder.Id, args.Message.DeliveryCount, args.Message.MessageId);
 
-        await _eventStream.PublishAsync(
-            reminder);
+        await _eventStream.PublishAsync(reminder);
+        await args.CompleteMessageAsync(args.Message);
 
         await Task.CompletedTask;
     }
