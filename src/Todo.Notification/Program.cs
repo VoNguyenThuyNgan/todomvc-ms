@@ -25,7 +25,6 @@ builder.Services.AddSingleton(sp =>
 builder.Services.AddHostedService<EmailWorker>();
 builder.Services.AddSingleton<IEmailSender, FakeEmailSender>();
 builder.Services.AddSingleton<INotificationChannel, EmailChannel>();
-builder.Services.AddHostedService<EmailWorker>();
 
 var host = builder.Build();
 host.Run();
