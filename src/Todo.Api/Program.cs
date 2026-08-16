@@ -19,6 +19,8 @@ builder.Services.Configure<ServiceBusOptions>(
     builder.Configuration.GetSection(ServiceBusOptions.SectionName));
 
 // Services
+builder.Services.AddProblemDetails();
+builder.Services.AddExceptionHandler<ValidationExceptionHandler>();
 builder.Services.AddAutoMapper(typeof(Program).Assembly);
 builder.Services.AddValidatorsFromAssemblyContaining<CreateTodoCommandValidator>();
 builder.Services.AddCarter();
@@ -47,6 +49,8 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
 var app = builder.Build();
+
+app.UseExceptionHandler();
 
 // Swagger
 if (app.Environment.IsDevelopment())
