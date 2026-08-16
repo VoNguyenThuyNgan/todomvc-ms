@@ -47,10 +47,10 @@ Accept: application/json
 ### Create todo
 POST {{host}}/bff/todos
 Content-Type: application/json
-
 {
-    "title": "ASB BFF",
-    "dueAt": "2026-07-27"
+  "title": "",
+  "isCompleted": false,
+  "dueAt": "2026-07-23T09:00:00Z"
 }
 
 
@@ -59,11 +59,11 @@ Content-Type: application/json
 ##################################################
 
 ### Update todo
-PUT {{host}}/bff/todos/{{todoId}}
+PUT {{host}}/bff/todos/6a7af3676725838fe13924f
 Content-Type: application/json
 
 {
-    "title": "Test Reminder via BFF - Updated",
+    "title": "",
     "isCompleted": false,
     "dueAt": "2026-07-23T09:00:00Z"
 }
@@ -224,7 +224,7 @@ Content-Type: application/json
 ##################################################
 
 ### Dismiss reminder
-PATCH {{host}}/bff/reminders/{{reminderId}}/dismiss
+PATCH {{host}}/bff/reminders/6a8174c11724aa38160153be/dismiss
 Accept: application/json
 
 ###

@@ -33,9 +33,8 @@ Accept: application/json
 
 POST {{TodoBff_HostAddress}}/bff/todos
 Content-Type: application/json
-
 {
-    "title": "Learn Todo BFF"
+    "title": "Learn Todo BFF",
     "dueAt": "2026-07-23T13:00:00Z"
 }
 
