@@ -20,9 +20,25 @@ namespace Todo.Api.Features.Todos.ToggleAllTodos
             var todos = await DB.Find<TodoItem>()
                 .ExecuteAsync();
 
+            DateTime? completedAt = request.IsCompleted
+                ? DateTime.UtcNow
+                : null;
+
             foreach (var todo in todos)
             {
-                todo.IsCompleted = request.IsCompleted;
+                if (request.IsCompleted)
+                {
+                    if (!todo.IsCompleted)
+                    {
+                        todo.IsCompleted = true;
+                        todo.CompletedAt = completedAt;
+                    }
+                }
+                else
+                {
+                    todo.IsCompleted = false;
+                    todo.CompletedAt = null;
+                }
                 await todo.SaveAsync();
             }
 

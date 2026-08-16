@@ -7,5 +7,6 @@ namespace Todo.Api.Features.Todos
         public bool IsCompleted { get; set; }
         public DateTime CreateAt { get; set; }
         public DateTime? DueAt { get; set; }
+        public DateTime? CompletedAt { get; set; }
     }
 }

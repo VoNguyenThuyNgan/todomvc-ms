@@ -7,6 +7,7 @@ using MongoDB.Entities;
 using Todo.Api.Common.Configuration;
 using Todo.Api.Common.Validation;
 using Todo.Api.Features.Reminders;
+using Todo.Api.Features.Todos;
 using Todo.Api.Features.Todos.CreateTodo;
 using Todo.Api.Services;
 
@@ -68,6 +69,28 @@ var clientSettings = MongoClientSettings.FromConnectionString(mongoOptions.Conne
 await DB.InitAsync(
     mongoOptions.DatabaseName,
     clientSettings);
+
+// Todo indexes
+await DB.Index<TodoItem>()
+    .Key(todo => todo.DueAt, KeyType.Ascending)
+    .CreateAsync();
+
+await DB.Index<TodoItem>()
+    .Key(todo => todo.IsCompleted, KeyType.Ascending)
+    .CreateAsync();
+
+// Reminder indexes
+await DB.Index<Reminder>()
+    .Key(reminder => reminder.TodoId, KeyType.Ascending)
+    .CreateAsync();
+
+await DB.Index<Reminder>()
+    .Key(reminder => reminder.State, KeyType.Ascending)
+    .CreateAsync();
+
+await DB.Index<Reminder>()
+    .Key(reminder => reminder.SnoozeUntil, KeyType.Ascending)
+    .CreateAsync();
 
 app.UseHttpsRedirection();
 app.MapCarter();

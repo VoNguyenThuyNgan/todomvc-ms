@@ -32,6 +32,11 @@ namespace Todo.Api.Features.Todos.ToggleTodo
             }
 
             todo.IsCompleted = !todo.IsCompleted;
+
+            todo.CompletedAt = todo.IsCompleted
+                ? DateTime.UtcNow
+                : null;
+
             await todo.SaveAsync();
 
             var response = mapper.Map<TodoDto>(todo);

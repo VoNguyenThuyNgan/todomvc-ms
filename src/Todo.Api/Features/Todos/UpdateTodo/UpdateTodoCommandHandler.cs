@@ -22,6 +22,8 @@ public class UpdateTodoCommandHandler
         var todo = await DB.Find<TodoItem>()
             .OneAsync(request.Id);
 
+        var wasCompleted = todo.IsCompleted;
+
         if (todo is null)
         {
             return null;
@@ -30,6 +32,15 @@ public class UpdateTodoCommandHandler
         todo.Title = request.Title;
         todo.IsCompleted = request.IsCompleted;
         todo.DueAt = request.DueAt;
+
+        if (!wasCompleted && request.IsCompleted)
+        {
+            todo.CompletedAt = DateTime.UtcNow;
+        }
+        else if (wasCompleted && !request.IsCompleted)
+        {
+            todo.CompletedAt = null;
+        }
 
         await todo.SaveAsync();
 
