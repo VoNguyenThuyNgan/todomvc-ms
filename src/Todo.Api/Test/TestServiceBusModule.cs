@@ -7,6 +7,14 @@ public class TestServiceBusModule : ICarterModule
 {
     public void AddRoutes(IEndpointRouteBuilder app)
     {
+        var environment = app.ServiceProvider
+            .GetRequiredService<IHostEnvironment>();
+
+        if (!environment.IsDevelopment())
+        {
+            return;
+        }
+
         app.MapPost("/api/test/send", async (
             IServiceBusPublisher publisher,
             CancellationToken cancellationToken) =>
