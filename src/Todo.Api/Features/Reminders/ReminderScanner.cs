@@ -69,16 +69,24 @@ namespace Todo.Api.Features.Reminders
                     !todo.IsCompleted)
                 .ExecuteAsync();
 
+            var todoIds = todos
+            .Select(todo => todo.ID)
+            .ToList();
+
+            var existingReminders = await DB.Find<Reminder>()
+            .Match(reminder =>
+                todoIds.Contains(reminder.TodoId))
+            .ExecuteAsync();
+
+            var reminderTodoIds = existingReminders
+            .Select(reminder => reminder.TodoId)
+            .ToHashSet();
+
             foreach (var todo in todos)
             {
                 cancellationToken.ThrowIfCancellationRequested();
 
-                var existingReminder = await DB.Find<Reminder>()
-                    .Match(reminder =>
-                        reminder.TodoId == todo.ID)
-                    .ExecuteFirstAsync();
-
-                if (existingReminder is not null)
+                if (reminderTodoIds.Contains(todo.ID))
                 {
                     continue;
                 }
@@ -142,28 +150,30 @@ namespace Todo.Api.Features.Reminders
                 .Match(todo => todo.IsCompleted)
                 .ExecuteAsync();
 
-            foreach (var todo in completedTodos)
+            var completedTodoIds = completedTodos
+                .Select(todo => todo.ID)
+                .ToList();
+
+            var reminders = await DB.Find<Reminder>()
+                .Match(reminder =>
+                    completedTodoIds.Contains(reminder.TodoId) &&
+                    reminder.State != ReminderState.Dismissed)
+                .ExecuteAsync();
+
+            foreach (var reminder in reminders)
             {
                 cancellationToken.ThrowIfCancellationRequested();
 
-                var reminders = await DB.Find<Reminder>()
-                    .Match(reminder =>
-                        reminder.TodoId == todo.ID &&
-                        reminder.State != ReminderState.Dismissed)
-                    .ExecuteAsync();
-
-                foreach (var reminder in reminders)
-                {
-                    reminder.State = ReminderState.Dismissed;
-                    reminder.SnoozeUntil = null;
+                reminder.State = ReminderState.Dismissed;
+                reminder.SnoozeUntil = null;
 
                     await reminder.SaveAsync();
 
                     _logger.LogInformation(
                         "Reminder {ReminderId} dismissed because Todo {TodoId} was completed.",
                         reminder.ID,
-                        todo.ID);
-                }
+                        reminder.TodoId);
+                
             }
         }
 
@@ -174,25 +184,37 @@ namespace Todo.Api.Features.Reminders
                     reminder.State != ReminderState.Dismissed)
                 .ExecuteAsync();
 
+            var todoIds = reminders
+           .Select(reminder => reminder.TodoId)
+           .Distinct()
+           .ToList();
+
+            var existingTodos = await DB.Find<TodoItem>()
+                .Match(todo => todoIds.Contains(todo.ID))
+                .ExecuteAsync();
+
+            var existingTodoIdSet = existingTodos
+                .Select(todo => todo.ID)
+                .ToHashSet();
+
             foreach (var reminder in reminders)
             {
                 cancellationToken.ThrowIfCancellationRequested();
 
-                var todo = await DB.Find<TodoItem>()
-                    .OneAsync(reminder.TodoId);
-
-                if (todo is null)
+                if (existingTodoIdSet.Contains(reminder.TodoId))
                 {
-                    reminder.State = ReminderState.Dismissed;
-                    reminder.SnoozeUntil = null;
-
-                    await reminder.SaveAsync();
-
-                    _logger.LogInformation(
-                        "Reminder {ReminderId} dismissed because Todo {TodoId} no longer exists.",
-                        reminder.ID,
-                        reminder.TodoId);
+                    continue;
                 }
+
+                reminder.State = ReminderState.Dismissed;
+                reminder.SnoozeUntil = null;
+
+                await reminder.SaveAsync();
+
+                _logger.LogInformation(
+                    "Reminder {ReminderId} dismissed because Todo {TodoId} no longer exists.",
+                    reminder.ID,
+                    reminder.TodoId);
             }
         }
     }
