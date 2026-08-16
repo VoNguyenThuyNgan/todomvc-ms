@@ -75,8 +75,7 @@ namespace Todo.Api.Features.Reminders
 
                 var existingReminder = await DB.Find<Reminder>()
                     .Match(reminder =>
-                        reminder.TodoId == todo.ID &&
-                        reminder.State != ReminderState.Dismissed)
+                        reminder.TodoId == todo.ID)
                     .ExecuteFirstAsync();
 
                 if (existingReminder is not null)
